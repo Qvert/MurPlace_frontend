@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package murplace;
+
+message Product {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+  string price = 4;
+  string image = 5;
+}
+
+message ProductsResponse {
+  repeated Product products = 1;
+}
