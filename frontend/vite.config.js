@@ -34,5 +34,15 @@ export default defineConfig({
           }
         }
       }
+    outDir: 'dist/',
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        // Asset naming
+        assetFileNames: 'assets/[name]-[hash][extname]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+      }
+    }
   }
 }})

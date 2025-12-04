@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function Home() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     let mounted = true
@@ -59,26 +60,22 @@ export default function Home() {
         <h2 className="text-3xl font-bold mb-6">Shop by Pet Type</h2>
         <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex flex-wrap justify-between gap-4">
-            <a href="#" className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 w-full sm:w-auto">
-              <img src="http://static.photos/dogs/200x200/1" alt="Dogs" className="w-16 h-16 rounded-full object-cover mr-4" />
-              <span className="text-xl font-semibold">Dogs</span>
-            </a>
-            <a href="#" className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 w-full sm:w-auto">
-              <img src="http://static.photos/cats/200x200/1" alt="Cats" className="w-16 h-16 rounded-full object-cover mr-4" />
-              <span className="text-xl font-semibold">Cats</span>
-            </a>
-            <a href="#" className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 w-full sm:w-auto">
-              <img src="http://static.photos/fish/200x200/1" alt="Fish" className="w-16 h-16 rounded-full object-cover mr-4" />
-              <span className="text-xl font-semibold">Fish</span>
-            </a>
-            <a href="#" className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 w-full sm:w-auto">
-              <img src="http://static.photos/reptiles/200x200/1" alt="Reptiles" className="w-16 h-16 rounded-full object-cover mr-4" />
-              <span className="text-xl font-semibold">Reptiles</span>
-            </a>
-            <a href="#" className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 w-full sm:w-auto">
-              <img src="http://static.photos/birds/200x200/1" alt="Birds" className="w-16 h-16 rounded-full object-cover mr-4" />
-              <span className="text-xl font-semibold">Birds</span>
-            </a>
+            {[
+              { name: 'Dogs', img: 'http://static.photos/dogs/200x200/1' },
+              { name: 'Cats', img: 'http://static.photos/cats/200x200/1' },
+              { name: 'Fish', img: 'http://static.photos/fish/200x200/1' },
+              { name: 'Reptiles', img: 'http://static.photos/reptiles/200x200/1' },
+              { name: 'Birds', img: 'http://static.photos/birds/200x200/1' }
+            ].map(cat => (
+              <button
+                key={cat.name}
+                onClick={() => navigate(`/products/${cat.name.toLowerCase()}`)}
+                className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 w-full sm:w-auto text-left"
+              >
+                <img src={cat.img} alt={cat.name} className="w-16 h-16 rounded-full object-cover mr-4" />
+                <span className="text-xl font-semibold">{cat.name}</span>
+              </button>
+            ))}
           </div>
         </div>
       </section>
