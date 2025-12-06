@@ -26,6 +26,12 @@ export default function Header(){
               <span>Login</span>
             </button>
           </Link>
+          <Link to="/signup">
+            <button className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+              <i data-feather="user-plus" className="mr-1"></i>
+              <span>Sign Up</span>
+            </button>
+          </Link>
           <button className="flex items-center text-gray-700 hover:text-indigo-600">
             <i data-feather="shopping-cart" className="mr-1"></i>
             <span>Cart</span>
