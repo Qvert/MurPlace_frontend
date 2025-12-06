@@ -5,10 +5,9 @@ const PROXY_TARGET = process.env.VITE_PROXY_TARGET || 'http://127.0.0.1:5173'
 
 export default defineConfig({
   plugins: [react()],
-  root: '.',
   server: {
+    port: 3000,
     proxy: {
-      // Proxy API calls to Django dev server. Target can be overridden with VITE_PROXY_TARGET env var.
       '/api': {
         target: PROXY_TARGET,
         changeOrigin: true,
@@ -20,11 +19,22 @@ export default defineConfig({
         target: PROXY_TARGET,
         changeOrigin: true,
         secure: false
-      }
-    }
+      },
+      '/admin': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
   },
   build: {
-    outDir: 'dist/', 
+    outDir: 'dist',
+    rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+          }
+        }
+      }
+    outDir: 'dist/',
     emptyOutDir: true,
     rollupOptions: {
       output: {
@@ -35,4 +45,4 @@ export default defineConfig({
       }
     }
   }
-})
+}})
