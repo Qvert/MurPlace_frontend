@@ -38,3 +38,23 @@ export async function fetchProductsByCategory(category) {
   const data = await res.json()
   return data.products || []
 }
+
+export async function fetchProductsBySearch(query, offset = 0, limit = 20) {
+  // Fallback to JSON only for search (no protobuf support yet)
+  const params = new URLSearchParams({
+    q: query,
+    offset: offset.toString(),
+    limit: limit.toString()
+  })
+  
+  const res = await fetch(`/api/products/search/?${params.toString()}`)
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error('Failed fetching search results: ' + res.status + ' ' + text)
+  }
+  const data = await res.json()
+  return {
+    products: data.products || [],
+    total: data.total || 0
+  }
+}
