@@ -4,6 +4,7 @@ import { getCartCount } from '../utils/cart'
 
 export default function Header(){
   const [cartCount, setCartCount] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
     const sync = () => setCartCount(getCartCount())
@@ -14,6 +15,13 @@ export default function Header(){
       window.removeEventListener('cart-updated', sync)
       window.removeEventListener('storage', sync)
     }
+  }, [])
+
+  useEffect(() => {
+    const checkAuth = () => setIsAuthenticated(!!localStorage.getItem('access_token'))
+    checkAuth()
+    window.addEventListener('storage', checkAuth)
+    return () => window.removeEventListener('storage', checkAuth)
   }, [])
 
   return (
@@ -34,18 +42,29 @@ export default function Header(){
         </div>
 
         <div className="flex items-center space-x-4">
-          <Link to="/login">
-            <button className="flex items-center text-gray-700 hover:text-indigo-600">
-              <i data-feather="user" className="mr-1"></i>
-              <span>Login</span>
-            </button>
-          </Link>
-          <Link to="/signup">
-            <button className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-              <i data-feather="user-plus" className="mr-1"></i>
-              <span>Sign Up</span>
-            </button>
-          </Link>
+          {isAuthenticated ? (
+            <Link to="/account">
+              <button className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                <i data-feather="user" className="mr-1"></i>
+                <span>Account</span>
+              </button>
+            </Link>
+          ) : (
+            <>
+              <Link to="/login">
+                <button className="flex items-center text-gray-700 hover:text-indigo-600">
+                  <i data-feather="user" className="mr-1"></i>
+                  <span>Login</span>
+                </button>
+              </Link>
+              <Link to="/signup">
+                <button className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                  <i data-feather="user-plus" className="mr-1"></i>
+                  <span>Sign Up</span>
+                </button>
+              </Link>
+            </>
+          )}
           <Link to="/cart" className="relative flex items-center text-gray-700 hover:text-indigo-600">
             <i data-feather="shopping-cart" className="mr-1"></i>
             <span>Cart</span>
