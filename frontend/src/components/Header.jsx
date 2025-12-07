@@ -1,7 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { getCartCount } from '../utils/cart'
 
 export default function Header(){
+  const [cartCount, setCartCount] = useState(0)
+
+  useEffect(() => {
+    const sync = () => setCartCount(getCartCount())
+    sync()
+    window.addEventListener('cart-updated', sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener('cart-updated', sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
+
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -32,10 +46,13 @@ export default function Header(){
               <span>Sign Up</span>
             </button>
           </Link>
-          <button className="flex items-center text-gray-700 hover:text-indigo-600">
+          <Link to="/cart" className="relative flex items-center text-gray-700 hover:text-indigo-600">
             <i data-feather="shopping-cart" className="mr-1"></i>
             <span>Cart</span>
-          </button>
+            {cartCount > 0 && (
+              <span className="ml-2 text-xs bg-indigo-600 text-white rounded-full px-2 py-0.5">{cartCount}</span>
+            )}
+          </Link>
         </div>
       </div>
 

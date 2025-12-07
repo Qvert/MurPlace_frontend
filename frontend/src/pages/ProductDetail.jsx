@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { addToCart } from '../utils/cart'
 
 export default function ProductDetail(){
   const { id } = useParams()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [added, setAdded] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -39,7 +41,16 @@ export default function ProductDetail(){
           <p className="text-gray-600 mb-4">{product.description}</p>
           <p className="text-indigo-600 font-bold text-xl mb-4">${product.price}</p>
           <div className="mt-auto">
-            <button className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded mr-2">Add to Cart</button>
+            <button
+              className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded mr-2"
+              onClick={() => {
+                addToCart(product, 1)
+                setAdded(true)
+                setTimeout(() => setAdded(false), 1200)
+              }}
+            >
+              {added ? 'Added!' : 'Add to Cart'}
+            </button>
             <Link to="/" className="text-sm text-gray-600 hover:text-indigo-600">Back to Home</Link>
           </div>
         </div>

@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import ProductDetail from './pages/ProductDetail'
 import Products from './pages/Products'
+import Cart from './pages/Cart'
 import Header from './components/Header'
 import Footer from './components/Footer'
 
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/products/:category" element={<Products />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </main>
 
