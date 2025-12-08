@@ -30,7 +30,7 @@ export async function fetchProductsByCategory(category) {
   }
 
   // Fallback to JSON
-  const res = await fetch(`/api/products/${q}`)
+  const res = await fetch(`/api/products${q}`)
   if (!res.ok) {
     const text = await res.text().catch(() => '')
     throw new Error('Failed fetching products: ' + res.status + ' ' + text)
