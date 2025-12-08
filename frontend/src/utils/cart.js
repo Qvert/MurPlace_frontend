@@ -46,9 +46,8 @@ export function addToCart(product, quantity = 1) {
   } else {
     cart.push({
       id: product.id,
-      title: product.title,
-      price: product.price,
-      image: product.image,
+      name: product.name,
+      image_url: product.image_url,
       quantity: quantity || 1
     })
   }
