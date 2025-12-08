@@ -34,17 +34,16 @@ export default function ProductDetail(){
     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
       <div className="md:flex">
         <div className="md:w-1/2">
-          <img src={product.image} alt={product.title} className="w-full h-80 object-cover" />
+          <img src={product.image_url} alt={product.name} className="w-full h-80 object-cover" />
         </div>
         <div className="p-6 md:w-1/2 flex flex-col">
-          <h1 className="text-2xl font-bold mb-2">{product.title}</h1>
+          <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
           <p className="text-gray-600 mb-4">{product.description}</p>
-          <p className="text-indigo-600 font-bold text-xl mb-4">${product.price}</p>
           <div className="mt-auto">
             <button
               className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded mr-2"
               onClick={() => {
-                addToCart(product, 1)
+                addToCart({ id: product.id, name: product.name, image_url: product.image_url }, 1)
                 setAdded(true)
                 setTimeout(() => setAdded(false), 1200)
               }}

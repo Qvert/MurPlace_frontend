@@ -47,18 +47,17 @@ export default function Products() {
         {products.map(p => (
           <div key={p.id} className="bg-white rounded-lg shadow-md overflow-hidden w-full max-w-xs mx-auto flex flex-col h-72">
             <Link to={`/product/${p.id}`} className="no-underline text-current block flex-1 flex flex-col">
-              <img src={p.image} alt={p.title} className="w-full h-36 object-cover" />
+              <img src={p.image_url} alt={p.name} className="w-full h-36 object-cover" />
               <div className="p-3 flex-grow flex flex-col">
-                <h3 className="font-semibold text-md mb-1">{p.title}</h3>
+                <h3 className="font-semibold text-md mb-1">{p.name}</h3>
                 <p className="text-gray-600 text-sm mb-2 flex-grow line-clamp-2">{p.description}</p>
-                <p className="text-indigo-600 font-bold">${p.price}</p>
               </div>
             </Link>
             <div className="p-3 pt-0">
               <button
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded transition-colors"
                 onClick={() => {
-                  addToCart(p, 1)
+                  addToCart({ id: p.id, name: p.name, image_url: p.image_url }, 1)
                   setAddedId(p.id)
                   setTimeout(() => setAddedId(null), 1200)
                 }}

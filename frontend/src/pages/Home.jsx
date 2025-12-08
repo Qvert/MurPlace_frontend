@@ -90,11 +90,10 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {products.map(p => (
             <Link key={p.id} to={`/product/${p.id}`} className="bg-white rounded-lg shadow-md overflow-hidden w-full max-w-xs mx-auto flex flex-col h-64 no-underline text-current">
-              <img src={p.image} alt={p.title} className="w-full h-40 object-cover" />
+              <img src={p.image_url} alt={p.name} className="w-full h-40 object-cover" />
               <div className="p-3 flex-grow flex flex-col">
-                <h3 className="font-semibold text-md mb-1">{p.title}</h3>
+                <h3 className="font-semibold text-md mb-1">{p.name}</h3>
                 <p className="text-gray-600 text-sm mb-2 flex-grow">{p.description}</p>
-                <p className="text-indigo-600 font-bold">${p.price}</p>
               </div>
             </Link>
           ))}
