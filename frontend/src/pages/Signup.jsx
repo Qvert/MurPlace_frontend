@@ -61,6 +61,10 @@ export default function Signup() {
       // Send only necessary fields (exclude confirmPassword)
       const { confirmPassword, ...payload } = form
       const data = await postJSON('/api/signup/', payload)
+      // Store token if provided by backend
+      if (data.token) {
+        localStorage.setItem('token', data.token)
+      }
       // If postJSON doesn't throw, the request was successful (2xx status)
       navigate('/')
     } catch (err) {

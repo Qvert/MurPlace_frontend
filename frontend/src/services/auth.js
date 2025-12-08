@@ -8,10 +8,9 @@ export const authService = {
         password
       });
 
-      if (response.data.access) {
-        localStorage.setItem('access_token', response.data.access);
-        localStorage.setItem('refresh_token', response.data.refresh);
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       }
 
       return response.data;
@@ -24,8 +23,7 @@ export const authService = {
     try {
       await api.post('/api/logout/');
     } finally {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('token');
       delete api.defaults.headers.common['Authorization'];
     }
   },

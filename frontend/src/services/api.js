@@ -14,8 +14,8 @@ const api = axios.create({
 // Интерцептор для запросов
 api.interceptors.request.use(
   (config) => {
-    // Можно добавить токен авторизации
-    const token = localStorage.getItem('access_token');
+    // Добавить токен авторизации
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -33,27 +33,14 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Only attempt token refresh if there's a token to refresh
-    if (error.response?.status === 401 && !originalRequest._retry && localStorage.getItem('refresh_token')) {
+    // If unauthorized, redirect to login
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
-      try {
-        // Попытка обновить токен
-        const refreshToken = localStorage.getItem('refresh_token');
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/v1/token/refresh/`,
-          { refresh: refreshToken }
-        );
-
-        localStorage.setItem('access_token', response.data.access);
-        originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
-
-        return api(originalRequest);
-      } catch (refreshError) {
-        // Перенаправляем на логин
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      }
+      
+      // Clear token and redirect to login
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+      return Promise.reject(error);
     }
 
     // Обработка других ошибок

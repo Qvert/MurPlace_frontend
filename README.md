@@ -48,4 +48,4 @@ You need to build the frontend with Vite and serve the built files using the bac
 npm run build
 ```
 
-copy the files from dist into the static folder of your backend. and update the serve to serve the pages in question. In Django for example, you'll add the views for em.
+copy the files from dist into the static folder of your backend. and update the server to serve the pages in question. In Django for example, you'll add the views for em.

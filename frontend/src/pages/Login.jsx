@@ -13,9 +13,8 @@ export default function Login() {
     setError(null)
     try {
       const data = await postJSON('/api/login/', { username, password })
-      if (data.access) {
-        localStorage.setItem('access_token', data.access)
-        if (data.refresh) localStorage.setItem('refresh_token', data.refresh)
+      if (data.token) {
+        localStorage.setItem('token', data.token)
         window.dispatchEvent(new Event('storage'))
         navigate('/account')
       } else if (data.success) {

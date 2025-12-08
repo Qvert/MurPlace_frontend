@@ -34,7 +34,7 @@ export default function Header(){
   }, [])
 
   useEffect(() => {
-    const checkAuth = () => setIsAuthenticated(!!localStorage.getItem('access_token'))
+    const checkAuth = () => setIsAuthenticated(!!localStorage.getItem('token'))
     checkAuth()
     window.addEventListener('storage', checkAuth)
     return () => window.removeEventListener('storage', checkAuth)

@@ -12,7 +12,7 @@ export default function Account() {
     let mounted = true
 
     async function loadUser() {
-      const token = localStorage.getItem('access_token')
+      const token = localStorage.getItem('token')
       if (!token) {
         navigate('/login')
         return
@@ -26,8 +26,7 @@ export default function Account() {
           setError('Failed to load user data')
           // If unauthorized, redirect to login
           if (err.response?.status === 401) {
-            localStorage.removeItem('access_token')
-            localStorage.removeItem('refresh_token')
+            localStorage.removeItem('token')
             navigate('/login')
           }
         }
