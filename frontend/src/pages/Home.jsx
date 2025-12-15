@@ -61,11 +61,11 @@ export default function Home() {
         <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex flex-wrap justify-between gap-4">
             {[
-              { name: 'Dogs', img: 'http://static.photos/dogs/200x200/1' },
-              { name: 'Cats', img: 'http://static.photos/cats/200x200/1' },
-              { name: 'Fish', img: 'http://static.photos/fish/200x200/1' },
-              { name: 'Reptiles', img: 'http://static.photos/reptiles/200x200/1' },
-              { name: 'Birds', img: 'http://static.photos/birds/200x200/1' }
+              { name: 'Dogs', img: '/static/dogs.png' },
+              { name: 'Cats', img: '/static/cats.png' },
+              { name: 'Fish', img: '/static/fish.png' },
+              { name: 'Reptiles', img: '/static/reptiles.png' },
+              { name: 'Birds', img: '/static/birds.png' }
             ].map(cat => (
               <button
                 key={cat.name}
