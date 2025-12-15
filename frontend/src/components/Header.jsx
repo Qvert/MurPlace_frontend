@@ -20,6 +20,11 @@ export default function Header(){
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [theme, setTheme] = useState(() => {
+    const stored = localStorage.getItem('theme')
+    if (stored === 'dark' || stored === 'light') return stored
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
   const searchInputRef = useRef(null)
 
   useEffect(() => {
@@ -40,6 +45,11 @@ export default function Header(){
     return () => window.removeEventListener('storage', checkAuth)
   }, [])
 
+  useEffect(() => {
+    document.body.classList.toggle('theme-dark', theme === 'dark')
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
   const handleSearchSubmit = () => {
     const trimmedQuery = searchQuery.trim()
     if (!trimmedQuery) {
@@ -57,6 +67,8 @@ export default function Header(){
       handleSearchSubmit()
     }
   }
+
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark')
 
   return (
     <header className="bg-white shadow-sm">
@@ -87,6 +99,15 @@ export default function Header(){
         </div>
 
         <div className="flex items-center space-x-4">
+          <button
+            onClick={toggleTheme}
+            className="flex items-center px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
+            aria-label="Toggle theme"
+          >
+            <span className="mr-2" aria-hidden="true">{theme === 'dark' ? '☀' : '🌙'}</span>
+            <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+          </button>
+
           {isAuthenticated ? (
             <Link to="/account">
               <button className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
