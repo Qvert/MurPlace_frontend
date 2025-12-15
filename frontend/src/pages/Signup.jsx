@@ -15,15 +15,16 @@ export default function Signup() {
   }
 
   function validateForm() {
-    // Username: alphanumeric and underscores only, 3-20 chars
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(form.username)) {
+    // Username: letters (Latin/Cyrillic), numbers, underscores; 3-20 chars
+    if (!/^[A-Za-zА-Яа-яЁё0-9_]{3,20}$/.test(form.username)) {
       return 'Username must be 3-20 characters (letters, numbers, underscores only)'
     }
 
-    // First name: letters, spaces, hyphens only
-    if (!/^[a-zA-Z\s-]{1,50}$/.test(form.first_name)) {
-      return 'First name can only contain letters, spaces, and hyphens'
+    // First name: letters (Latin/Cyrillic), spaces, hyphens, apostrophes
+    if (!/^[A-Za-zА-Яа-яЁё' \-]{1,50}$/.test(form.first_name)) {
+      return 'First name can only contain letters, spaces, hyphens, and apostrophes'
     }
+
 
     // Email: basic format check (browser validation handles most of this)
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
