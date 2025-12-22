@@ -107,7 +107,7 @@ export default function SearchResults() {
                   <button
                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded text-sm transition-colors"
                     onClick={() => {
-                      addToCart({ id: p.id, name: p.name, image_url: p.image_url }, 1)
+                      addToCart({ id: p.id, name: p.name, image_url: p.image_url, price: p.price }, 1)
                       setAddedId(p.id)
                       setTimeout(() => setAddedId(null), 1200)
                     }}
