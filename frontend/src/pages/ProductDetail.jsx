@@ -48,7 +48,7 @@ export default function ProductDetail(){
             <button
               className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded mr-2"
               onClick={() => {
-                addToCart({ id: product.id, name: product.name, image_url: product.image_url }, 1)
+                addToCart({ id: product.id, name: product.name, image_url: product.image_url, price: product.price }, 1)
                 setAdded(true)
                 setTimeout(() => setAdded(false), 1200)
               }}

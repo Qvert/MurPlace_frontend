@@ -5,6 +5,11 @@ export default function Home() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [theme, setTheme] = useState(() => {
+    const stored = localStorage.getItem('theme')
+    if (stored === 'dark' || stored === 'light') return stored
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -44,6 +49,17 @@ export default function Home() {
     return () => { mounted = false }
   }, [])
 
+  useEffect(() => {
+    const handleThemeChange = () => {
+      const stored = localStorage.getItem('theme')
+      if (stored === 'dark' || stored === 'light') {
+        setTheme(stored)
+      }
+    }
+    window.addEventListener('storage', handleThemeChange)
+    return () => window.removeEventListener('storage', handleThemeChange)
+  }, [])
+
   return (
     <div>
       {/* Deals Carousel */}
@@ -61,18 +77,18 @@ export default function Home() {
         <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex flex-wrap justify-between gap-4">
             {[
-              { name: 'Dogs', img: '/static/dogs.png' },
-              { name: 'Cats', img: '/static/cats.png' },
-              { name: 'Fish', img: '/static/fish.png' },
-              { name: 'Reptiles', img: '/static/reptiles.png' },
-              { name: 'Birds', img: '/static/birds.png' }
+              { name: 'Dogs', img: '/static/dogs.png', imgDark: '/static/dogs_dark.png' },
+              { name: 'Cats', img: '/static/cats.png', imgDark: '/static/cats_dark.png' },
+              { name: 'Fish', img: '/static/fish.png', imgDark: '/static/fish_dark.png' },
+              { name: 'Reptiles', img: '/static/reptiles.png', imgDark: '/static/reptiles_dark.png' },
+              { name: 'Birds', img: '/static/birds.png', imgDark: '/static/birds_dark.png' }
             ].map(cat => (
               <button
                 key={cat.name}
                 onClick={() => navigate(`/products/${cat.name.toLowerCase()}`)}
                 className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 w-full sm:w-auto text-left"
               >
-                <img src={cat.img} alt={cat.name} className="w-16 h-16 rounded-full object-cover mr-4" />
+                <img src={theme === 'dark' ? cat.imgDark : cat.img} alt={cat.name} className="w-16 h-16 rounded-full object-cover mr-4" />
                 <span className="text-xl font-semibold">{cat.name}</span>
               </button>
             ))}

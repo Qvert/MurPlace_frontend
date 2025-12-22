@@ -74,7 +74,7 @@ export default function Header(){
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center">
-          <img src="/static/logo.png" alt="Муркетплейс Logo" className="h-12 w-12 mr-2" />
+          <img src={theme === 'dark' ? '/static/logo_dark.png' : '/static/logo.png'} alt="Муркетплейс Logo" className="h-12 w-12 mr-2" />
           <h1 className="text-2xl font-bold text-indigo-600">Муркетплейс</h1>
         </div>
 
