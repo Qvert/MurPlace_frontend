@@ -17,7 +17,7 @@ export default function Cart() {
   }, [])
 
   const totals = useMemo(() => {
-    const subtotal = items.reduce((sum, item) => sum + 0 * (Number(item.quantity) || 0), 0)
+    const subtotal = items.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0)
     const shipping = items.length ? 9.99 : 0
     const total = subtotal + shipping
     return { subtotal, shipping, total }
@@ -62,7 +62,7 @@ export default function Cart() {
               <img src={item.image_url} alt={item.name} className="w-24 h-24 object-cover rounded" />
               <div className="flex-1 mt-4 sm:mt-0">
                 <h3 className="text-lg font-semibold">{item.name}</h3>
-                <p className="text-indigo-600 font-bold">${Number(0 || 0).toFixed(2)}</p>
+                <p className="text-indigo-600 font-bold">${Number(item.price || 0).toFixed(2)}</p>
                 <div className="mt-3 flex items-center space-x-2">
                   <label className="text-sm text-gray-600" htmlFor={`qty-${item.id}`}>Qty</label>
                   <input

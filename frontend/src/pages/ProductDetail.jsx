@@ -39,6 +39,11 @@ export default function ProductDetail(){
         <div className="p-6 md:w-1/2 flex flex-col">
           <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
           <p className="text-gray-600 mb-4">{product.description}</p>
+          {product.price != null && (
+            <p className="text-indigo-600 font-bold text-3xl mb-4">
+              ${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}
+            </p>
+          )}
           <div className="mt-auto">
             <button
               className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded mr-2"

@@ -54,6 +54,11 @@ export default function Products() {
               <div className="p-3 flex-grow flex flex-col">
                 <h3 className="font-semibold text-sm mb-1 line-clamp-2">{p.name}</h3>
                 <p className="text-gray-600 text-xs mb-2 flex-grow line-clamp-2">{p.description}</p>
+                {p.price != null && (
+                  <p className="text-indigo-600 font-bold text-lg mt-auto">
+                    ${typeof p.price === 'number' ? p.price.toFixed(2) : p.price}
+                  </p>
+                )}
               </div>
             </Link>
             <div className="p-3 pt-0">
