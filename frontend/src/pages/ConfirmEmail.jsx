@@ -118,7 +118,7 @@ export default function ConfirmEmail() {
           </div>
 
           {status === 'sending' && <p className="text-sm text-gray-500 mt-3">{t('confirm.processing')}</p>}
-          {status === 'sent' && <p className="text-sm text-green-600 mt-3">{message}</p>
+          {status === 'sent' && <p className="text-sm text-green-600 mt-3">{message}</p>}
         </div>
       </div>
     </div>
