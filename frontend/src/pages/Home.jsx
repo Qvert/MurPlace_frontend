@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useLang } from '../i18n.jsx' 
 
 export default function Home() {
   const [products, setProducts] = useState([])
@@ -11,6 +12,7 @@ export default function Home() {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   })
   const navigate = useNavigate()
+  const { t } = useLang()
 
   useEffect(() => {
     let mounted = true
@@ -66,22 +68,22 @@ export default function Home() {
       <section className="mb-12">
         <div className="relative rounded-xl overflow-hidden h-64">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
-            <h2 className="text-4xl font-bold text-white">Hot Deals This Week</h2>
+            <h2 className="text-4xl font-bold text-white">{t('hot_deals')}</h2>
           </div>
         </div>
       </section>
 
       {/* Pet Types Grid */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6">Shop by Pet Type</h2>
+        <h2 className="text-3xl font-bold mb-6">{t('shop.by_pet')}</h2>
         <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex flex-wrap justify-between gap-4">
             {[
-              { name: 'Dogs', img: '/static/dogs.png', imgDark: '/static/dogs_dark.png' },
-              { name: 'Cats', img: '/static/cats.png', imgDark: '/static/cats_dark.png' },
-              { name: 'Fish', img: '/static/fish.png', imgDark: '/static/fish_dark.png' },
-              { name: 'Reptiles', img: '/static/reptiles.png', imgDark: '/static/reptiles_dark.png' },
-              { name: 'Birds', img: '/static/birds.png', imgDark: '/static/birds_dark.png' }
+              { name: t('pet.Dogs'), img: '/static/dogs.png', imgDark: '/static/dogs_dark.png' },
+              { name: t('pet.Cats'), img: '/static/cats.png', imgDark: '/static/cats_dark.png' },
+              { name: t('pet.Fish'), img: '/static/fish.png', imgDark: '/static/fish_dark.png' },
+              { name: t('pet.Reptiles'), img: '/static/reptiles.png', imgDark: '/static/reptiles_dark.png' },
+              { name: t('pet.Birds'), img: '/static/birds.png', imgDark: '/static/birds_dark.png' }
             ].map(cat => (
               <button
                 key={cat.name}
@@ -98,10 +100,10 @@ export default function Home() {
 
       {/* Popular Items - dynamic from API */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6">Popular Items</h2>
+        <h2 className="text-3xl font-bold mb-6">{t('popular_items')}</h2>
 
-        {loading && <div className="text-center">Loading products...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
+        {loading && <div className="text-center">{t('loading_products')}</div>}
+        {error && <div className="text-red-500">{t('error_prefix')} {error}</div>}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {products.map(p => (

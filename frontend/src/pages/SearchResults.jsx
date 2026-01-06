@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { fetchProductsBySearch } from '../utils/api'
 import { addToCart } from '../utils/cart'
+import { useLang } from '../i18n.jsx' 
 
 const ITEMS_PER_PAGE = 20
 
@@ -16,6 +17,7 @@ export default function SearchResults() {
   const [error, setError] = useState(null)
   const [total, setTotal] = useState(0)
   const [addedId, setAddedId] = useState(null)
+  const { t } = useLang()
 
   useEffect(() => {
     let mounted = true
@@ -67,27 +69,27 @@ export default function SearchResults() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Search Results</h1>
-          {query && <p className="text-gray-600 mt-2">Showing results for "{query}"</p>}
+          <h1 className="text-3xl font-bold">{t('search.title')}</h1>
+          {query && <p className="text-gray-600 mt-2">{t('search.showing_for').replace('{q}', query)}</p>}
         </div>
         <div>
           <button onClick={() => navigate(-1)} className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200">
-            Back
+            {t('pagination.prev')}
           </button>
         </div>
-      </div>
+      </div> 
 
-      {loading && <div className="text-center py-8">Loading products...</div>}
+      {loading && <div className="text-center py-8">{t('loading_products')}</div>}
       {error && <div className="text-red-500 py-8">{error}</div>}
 
       {!loading && !error && products.length === 0 && (
-        <div className="text-center py-8 text-gray-500">No products found matching your search.</div>
+        <div className="text-center py-8 text-gray-500">{t('search.no_results')}</div>
       )}
 
       {!loading && !error && products.length > 0 && (
         <>
           <div className="text-sm text-gray-600 mb-4">
-            Found {total} result{total !== 1 ? 's' : ''}
+            {t('search.found').replace('{n}', total).replace('{plural}', total !== 1 ? 's' : '')}
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

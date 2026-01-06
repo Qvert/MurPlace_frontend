@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { clearCart, getCart, removeFromCart, updateCartItemQuantity } from '../utils/cart'
+import { useLang } from '../i18n.jsx' 
 
 export default function Cart() {
   const [items, setItems] = useState([])
+  const { t } = useLang()
 
   useEffect(() => {
     const sync = () => setItems(getCart())
@@ -41,9 +43,9 @@ export default function Cart() {
   if (!items.length) {
     return (
       <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-8 text-center">
-        <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
-        <p className="text-gray-600 mb-6">Add some goodies for your pet to get started.</p>
-        <Link to="/" className="inline-block px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Continue shopping</Link>
+        <h1 className="text-3xl font-bold mb-4">{t('cart.empty_title')}</h1>
+        <p className="text-gray-600 mb-6">{t('cart.empty_desc')}</p>
+        <Link to="/" className="inline-block px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">{t('cart.continue')}</Link>
       </div>
     )
   }
@@ -52,8 +54,8 @@ export default function Cart() {
     <div className="grid lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2 bg-white rounded-lg shadow overflow-hidden">
         <div className="p-6 border-b">
-          <h1 className="text-3xl font-bold">Shopping Cart</h1>
-          <p className="text-gray-600">Review your picks before checkout.</p>
+          <h1 className="text-3xl font-bold">{t('cart.title')}</h1>
+          <p className="text-gray-600">{t('cart.review')}</p>
         </div>
 
         <ul className="divide-y">
@@ -64,7 +66,7 @@ export default function Cart() {
                 <h3 className="text-lg font-semibold">{item.name}</h3>
                 <p className="text-indigo-600 font-bold">${Number(item.price || 0).toFixed(2)}</p>
                 <div className="mt-3 flex items-center space-x-2">
-                  <label className="text-sm text-gray-600" htmlFor={`qty-${item.id}`}>Qty</label>
+                  <label className="text-sm text-gray-600" htmlFor={`qty-${item.id}`}>{t('cart.qty')}</label>
                   <input
                     id={`qty-${item.id}`}
                     type="number"
@@ -73,7 +75,7 @@ export default function Cart() {
                     onChange={e => handleQuantityChange(item.id, Number(e.target.value))}
                     className="w-20 border rounded px-3 py-2"
                   />
-                  <button onClick={() => handleRemove(item.id)} className="text-sm text-red-600 hover:text-red-700">Remove</button>
+                  <button onClick={() => handleRemove(item.id)} className="text-sm text-red-600 hover:text-red-700">{t('cart.remove')}</button>
                 </div>
               </div>
             </li>
@@ -81,30 +83,30 @@ export default function Cart() {
         </ul>
 
         <div className="p-6 flex justify-between items-center border-t">
-          <Link to="/" className="text-indigo-600 hover:text-indigo-700">Continue shopping</Link>
-          <button onClick={handleClear} className="text-sm text-gray-500 hover:text-gray-700">Clear cart</button>
+          <Link to="/" className="text-indigo-600 hover:text-indigo-700">{t('cart.continue')}</Link>
+          <button onClick={handleClear} className="text-sm text-gray-500 hover:text-gray-700">{t('cart.clear')}</button>
         </div>
       </div>
 
       <aside className="bg-white rounded-lg shadow p-6 h-fit">
-        <h2 className="text-xl font-semibold mb-4">Order summary</h2>
+        <h2 className="text-xl font-semibold mb-4">{t('cart.order_summary')}</h2>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span>Subtotal</span>
+            <span>{t('cart.subtotal')}</span>
             <span>${totals.subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
-            <span>Shipping</span>
-            <span>{totals.shipping ? `$${totals.shipping.toFixed(2)}` : 'Free'}</span>
+            <span>{t('cart.shipping')}</span>
+            <span>{totals.shipping ? `$${totals.shipping.toFixed(2)}` : t('cart.free')}</span>
           </div>
           <div className="flex justify-between font-semibold text-lg border-t pt-3 mt-3">
-            <span>Total</span>
+            <span>{t('cart.total')}</span>
             <span>${totals.total.toFixed(2)}</span>
           </div>
         </div>
 
-        <button className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold">Proceed to checkout</button>
-        <p className="text-xs text-gray-500 mt-3">Checkout is a placeholder for now.</p>
+        <button className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold">{t('cart.proceed')}</button>
+        <p className="text-xs text-gray-500 mt-3">{t('cart.checkout_placeholder')}</p>
       </aside>
     </div>
   )

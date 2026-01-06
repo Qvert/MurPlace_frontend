@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { postJSON } from '../utils/api'
+import { useLang } from '../i18n.jsx'
 
 export default function Signup() {
   const [form, setForm] = useState({ username: '', first_name: '', email: '', password: '', confirmPassword: '' })

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getCartCount } from '../utils/cart'
 import { debounce } from '../utils/debounce'
+import { useLang } from '../i18n.jsx'
 
 const categoryData = {
   Cats: ['Cat Toys', 'Cat Food', 'Cat Litter', 'Cat Beds', 'Cat Scratchers'],
@@ -25,7 +26,21 @@ export default function Header(){
     if (stored === 'dark' || stored === 'light') return stored
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   })
+
   const searchInputRef = useRef(null)
+  const { lang, setLang, t } = useLang()
+  const [langSavedMsg, setLangSavedMsg] = useState('')
+
+  useEffect(() => {
+    const onSaved = (e) => {
+      const ok = e.detail?.success
+      const l = e.detail?.lang
+      setLangSavedMsg(ok ? `${l.toUpperCase()} saved` : `Failed to save ${l}`)
+      setTimeout(() => setLangSavedMsg(''), 2000)
+    }
+    window.addEventListener('lang-saved', onSaved)
+    return () => window.removeEventListener('lang-saved', onSaved)
+  }, [])
 
   useEffect(() => {
     const sync = () => setCartCount(getCartCount())
@@ -70,20 +85,22 @@ export default function Header(){
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark')
 
+
+
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center">
-          <img src={theme === 'dark' ? '/static/logo_dark.png' : '/static/logo.png'} alt="Муркетплейс Logo" className="h-12 w-12 mr-2" />
-          <h1 className="text-2xl font-bold text-indigo-600">Муркетплейс</h1>
+          <img src={theme === 'dark' ? '/static/logo_dark.png' : '/static/logo.png'} alt={`${t('app.title')} Logo`} className="h-12 w-12 mr-2" />
+          <h1 className="text-2xl font-bold text-indigo-600">{t('app.title')}</h1>
         </div>
 
-        <div className="flex-1 mx-8">
+          <div className="flex-1 mx-8">
           <div className="relative">
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Search for pet products..."
+              placeholder={t('search.placeholder')}
               value={searchQuery}
               onChange={handleSearchInputChange}
               onKeyDown={handleSearchKeyDown}
@@ -99,20 +116,38 @@ export default function Header(){
         </div>
 
         <div className="flex items-center space-x-4">
-          <button
-            onClick={toggleTheme}
-            className="flex items-center px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
-            aria-label="Toggle theme"
-          >
-            <span className="mr-2" aria-hidden="true">{theme === 'dark' ? '☀' : '🌙'}</span>
-            <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
-          </button>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={toggleTheme}
+              className="flex items-center px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
+              aria-label="Toggle theme"
+            >
+              <span className="mr-2" aria-hidden="true">{theme === 'dark' ? '☀' : '🌙'}</span>
+              <span>{theme === 'dark' ? t('theme.light') : t('theme.dark')}</span>
+            </button>
+
+            <label className="flex items-center px-2 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
+                className="bg-transparent outline-none"
+                aria-label={t('header.select_language')}
+              >
+                <option value="en">EN</option>
+                <option value="ru">RU</option>
+              </select>
+            </label>
+
+            {langSavedMsg && (
+              <div className="ml-3 text-sm text-green-600 font-medium">{langSavedMsg}</div>
+            )}
+          </div>
 
           {isAuthenticated ? (
             <Link to="/account">
               <button className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                 <i data-feather="user" className="mr-1"></i>
-                <span>Account</span>
+                <span>{t('header.account')}</span>
               </button>
             </Link>
           ) : (
@@ -120,20 +155,20 @@ export default function Header(){
               <Link to="/login">
                 <button className="flex items-center text-gray-700 hover:text-indigo-600">
                   <i data-feather="user" className="mr-1"></i>
-                  <span>Login</span>
+                  <span>{t('header.login')}</span>
                 </button>
               </Link>
               <Link to="/signup">
                 <button className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                   <i data-feather="user-plus" className="mr-1"></i>
-                  <span>Sign Up</span>
+                  <span>{t('header.signup')}</span>
                 </button>
               </Link>
             </>
           )}
           <Link to="/cart" className="relative flex items-center text-gray-700 hover:text-indigo-600">
             <i data-feather="shopping-cart" className="mr-1"></i>
-            <span>Cart</span>
+            <span>{t('header.cart')}</span>
             {cartCount > 0 && (
               <span className="ml-2 text-xs bg-indigo-600 text-white rounded-full px-2 py-0.5">{cartCount}</span>
             )}
@@ -155,7 +190,7 @@ export default function Header(){
                   href={`/products/${category.toLowerCase()}`}
                   className="px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors block whitespace-nowrap"
                 >
-                  {category}
+                  {t(`pet.${category}`) || category}
                 </a>
                 
                 {/* Dropdown Menu */}
@@ -167,7 +202,7 @@ export default function Header(){
                         href={`/products/${category.toLowerCase()}?subcategory=${encodeURIComponent(subcategory)}`}
                         className="block px-4 py-2 text-gray-700 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
                       >
-                        {subcategory}
+                        {t(`subcategory.${category}.${subcategory}`) || subcategory}
                       </a>
                     ))}
                   </div>

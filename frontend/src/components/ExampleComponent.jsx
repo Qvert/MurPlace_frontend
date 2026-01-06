@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useLang } from '../i18n.jsx'
 
 const ExampleComponent = () => {
   const [data, setData] = useState([]);
@@ -20,11 +21,13 @@ const ExampleComponent = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  const { t } = useLang()
+
+  if (loading) return <div>{t('loading')}</div>;
 
   return (
     <div>
-      <h1>Items from Django API</h1>
+      <h1>{t('footer.tagline')}</h1>
       <ul>
         {data.map(item => (
           <li key={item.id}>{item.name}</li>

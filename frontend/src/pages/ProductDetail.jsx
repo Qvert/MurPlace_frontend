@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { addToCart } from '../utils/cart'
+import { useLang } from '../i18n.jsx' 
 
 export default function ProductDetail(){
   const { id } = useParams()
@@ -8,6 +9,7 @@ export default function ProductDetail(){
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [added, setAdded] = useState(false)
+  const { t } = useLang()
 
   useEffect(() => {
     let mounted = true
@@ -26,8 +28,8 @@ export default function ProductDetail(){
     return () => { mounted = false }
   }, [id])
 
-  if (loading) return <div className="text-center">Loading...</div>
-  if (error) return <div className="text-red-500">{error}</div>
+  if (loading) return <div className="text-center">{t('loading')}</div>
+  if (error) return <div className="text-red-500">{t('error_prefix')} {error}</div> 
   if (!product) return null
 
   return (
@@ -53,9 +55,9 @@ export default function ProductDetail(){
                 setTimeout(() => setAdded(false), 1200)
               }}
             >
-              {added ? 'Added!' : 'Add to Cart'}
+              {added ? t('added') : t('add_to_cart')}
             </button>
-            <Link to="/" className="text-sm text-gray-600 hover:text-indigo-600">Back to Home</Link>
+            <Link to="/" className="text-sm text-gray-600 hover:text-indigo-600">{t('back_to_home')}</Link>
           </div>
         </div>
       </div>

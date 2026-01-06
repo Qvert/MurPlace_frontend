@@ -1,0 +1,354 @@
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { authService } from './services/auth'
+
+const translations = {
+  en: {
+    'app.title': 'MurPlace',
+    'search.placeholder': 'Search for pet products...',
+    'theme.light': 'Light',
+    'theme.dark': 'Dark',
+    'header.account': 'Account',
+    'header.login': 'Login',
+    'header.signup': 'Sign Up',
+    'header.cart': 'Cart',
+    'header.select_language': 'Language',
+
+    'account.title': 'My Account',
+    'account.subtitle': 'Manage your profile and preferences',
+    'account.info': 'Account Information',
+    'account.username': 'Username:',
+    'account.name': 'Name:',
+    'account.email': 'Email:',
+    'account.member_since': 'Member since:',
+    'account.loading': 'Loading account...',
+    'account.load_error': 'Failed to load user data',
+    'account.go_to_login': 'Go to Login',
+    'account.quick_actions': 'Quick Actions',
+    'account.view_cart': 'View Cart',
+    'account.check_items': 'Check your items',
+    'account.browse_products': 'Browse Products',
+    'account.find_products': 'Find pet supplies',
+    'account.settings': 'Account Settings',
+    'account.edit_profile': 'Edit Profile',
+    'account.change_password': 'Change Password',
+    'account.logout': 'Logout',
+    'account.preferred_language': 'Preferred language',
+
+    'lang.en': 'English',
+    'lang.ru': 'Русский',
+
+    'login.title': 'Login to Your Account',
+    'login.username': 'Username',
+    'login.password': 'Password',
+    'login.sign_in': 'Sign In',
+    'login.failed': 'Login failed',
+    'login.network_error': 'Network error',
+
+    'signup.title': 'Create Your Account',
+    'signup.button': 'Create Account',
+    'signup.password_hint': 'At least 8 characters with letters and numbers',
+    'signup.confirm_password': 'Confirm Password',
+
+    'hot_deals': 'Hot Deals This Week',
+    'shop.by_pet': 'Shop by Pet Type',
+    'pet.Dogs': 'Dogs',
+    'pet.Cats': 'Cats',
+    'pet.Fish': 'Fish',
+    'pet.Reptiles': 'Reptiles',
+    'pet.Birds': 'Birds',
+
+    // Subcategories (auto-generated)
+    'subcategory.Cats.Cat Toys': 'Cat Toys',
+    'subcategory.Cats.Cat Food': 'Cat Food',
+    'subcategory.Cats.Cat Litter': 'Cat Litter',
+    'subcategory.Cats.Cat Beds': 'Cat Beds',
+    'subcategory.Cats.Cat Scratchers': 'Cat Scratchers',
+
+    'subcategory.Dogs.Dog Toys': 'Dog Toys',
+    'subcategory.Dogs.Dog Food': 'Dog Food',
+    'subcategory.Dogs.Dog Beds': 'Dog Beds',
+    'subcategory.Dogs.Dog Grooming': 'Dog Grooming',
+    'subcategory.Dogs.Dog Collars': 'Dog Collars',
+
+    'subcategory.Rodents.Rodent Food': 'Rodent Food',
+    'subcategory.Rodents.Rodent Cages': 'Rodent Cages',
+    'subcategory.Rodents.Rodent Toys': 'Rodent Toys',
+    'subcategory.Rodents.Bedding': 'Bedding',
+    'subcategory.Rodents.Water Bottles': 'Water Bottles',
+
+    'subcategory.Fish.Fish Food': 'Fish Food',
+    'subcategory.Fish.Fish Tanks': 'Fish Tanks',
+    'subcategory.Fish.Fish Filters': 'Fish Filters',
+    'subcategory.Fish.Aquatic Plants': 'Aquatic Plants',
+    'subcategory.Fish.Fish Decorations': 'Fish Decorations',
+
+    'subcategory.Reptiles.Reptile Food': 'Reptile Food',
+    'subcategory.Reptiles.Reptile Tanks': 'Reptile Tanks',
+    'subcategory.Reptiles.Heating Lamps': 'Heating Lamps',
+    'subcategory.Reptiles.Substrate': 'Substrate',
+    'subcategory.Reptiles.Hides': 'Hides',
+
+    'subcategory.Birds.Bird Food': 'Bird Food',
+    'subcategory.Birds.Bird Cages': 'Bird Cages',
+    'subcategory.Birds.Bird Toys': 'Bird Toys',
+    'subcategory.Birds.Perches': 'Perches',
+    'subcategory.Birds.Bird Treats': 'Bird Treats',
+
+    'subcategory.Vet.Medications': 'Medications',
+    'subcategory.Vet.Supplements': 'Supplements',
+    'subcategory.Vet.First Aid': 'First Aid',
+    'subcategory.Vet.Health Monitors': 'Health Monitors',
+
+    'subcategory.Groomer.Shampoos': 'Shampoos',
+    'subcategory.Groomer.Brushes': 'Brushes',
+    'subcategory.Groomer.Clippers': 'Clippers',
+    'subcategory.Groomer.Nail Care': 'Nail Care',
+    'subcategory.Groomer.Drying Tools': 'Drying Tools',
+
+    'popular_items': 'Popular Items',
+    'loading_products': 'Loading products...',
+    'loading': 'Loading...',
+    'error_prefix': 'Error:',
+    'product_not_found': 'Product not found',
+    'add_to_cart': 'Add to Cart',
+    'added': 'Added!',
+    'back_to_home': 'Back to Home',
+    'search.title': 'Search Results',
+    'search.showing_for': 'Showing results for "{q}"',
+    'search.enter_term': 'Please enter a search term',
+    'search.no_results': 'No products found matching your search.',
+    'search.found': 'Found {n} result{plural}',
+    'pagination.prev': '← Previous',
+    'pagination.next': 'Next →',
+
+    'cart.empty_title': 'Your cart is empty',
+    'cart.empty_desc': 'Add some goodies for your pet to get started.',
+    'cart.continue': 'Continue shopping',
+    'cart.title': 'Shopping Cart',
+    'cart.review': 'Review your picks before checkout.',
+    'cart.qty': 'Qty',
+    'cart.remove': 'Remove',
+    'cart.clear': 'Clear cart',
+    'cart.order_summary': 'Order summary',
+    'cart.subtotal': 'Subtotal',
+    'cart.shipping': 'Shipping',
+    'cart.total': 'Total',
+    'cart.proceed': 'Proceed to checkout',
+    'cart.checkout_placeholder': 'Checkout is a placeholder for now.',
+    'cart.free': 'Free',
+
+    'footer.tagline': 'Your one-stop shop for all pet needs.',
+    'footer.shop': 'Shop',
+    'footer.services': 'Services',
+    'footer.company': 'Company',
+    'footer.all_products': 'All Products',
+    'footer.new_arrivals': 'New Arrivals',
+    'footer.deals': 'Deals',
+    'footer.vet': 'Veterinary',
+    'footer.grooming': 'Grooming',
+    'footer.sitting': 'Pet Sitting',
+    'footer.about': 'About Us',
+    'footer.contact': 'Contact',
+    'footer.careers': 'Careers',
+    'footer.copyright': 'All rights reserved.'
+  },
+  ru: {
+    'app.title': 'Муркетплейс',
+    'search.placeholder': 'Поиск товаров для питомцев...',
+    'theme.light': 'Светлая',
+    'theme.dark': 'Тёмная',
+    'header.account': 'Аккаунт',
+    'header.login': 'Войти',
+    'header.signup': 'Регистрация',
+    'header.cart': 'Корзина',
+    'header.select_language': 'Язык',
+
+    'account.title': 'Мой аккаунт',
+    'account.subtitle': 'Управляйте профилем и настройками',
+    'account.info': 'Информация аккаунта',
+    'account.username': 'Имя пользователя:',
+    'account.name': 'Имя:',
+    'account.email': 'Электронная почта:',
+    'account.member_since': 'На сайте с:',
+    'account.loading': 'Загрузка аккаунта...',
+    'account.load_error': 'Ошибка при загрузке данных пользователя',
+    'account.go_to_login': 'Перейти к входу',
+    'account.quick_actions': 'Быстрые действия',
+    'account.view_cart': 'Посмотреть корзину',
+    'account.check_items': 'Проверить товары',
+    'account.browse_products': 'Просмотреть товары',
+    'account.find_products': 'Найдите товары для питомцев',
+    'account.settings': 'Настройки аккаунта',
+    'account.edit_profile': 'Редактировать профиль',
+    'account.change_password': 'Сменить пароль',
+    'account.logout': 'Выйти',
+    'account.preferred_language': 'Предпочитаемый язык',
+
+    'lang.en': 'English',
+    'lang.ru': 'Русский',
+
+    'login.title': 'Войдите в аккаунт',
+    'login.username': 'Имя пользователя',
+    'login.password': 'Пароль',
+    'login.sign_in': 'Войти',
+    'login.failed': 'Ошибка входа',
+    'login.network_error': 'Сетевая ошибка',
+
+    'signup.title': 'Создать аккаунт',
+    'signup.button': 'Создать аккаунт',
+
+    'footer.tagline': 'Все, что нужно для ваших питомцев в одном месте.',
+    'footer.shop': 'Магазин',
+    'footer.services': 'Услуги',
+    'footer.company': 'Компания',
+    'footer.all_products': 'Все товары',
+    'footer.new_arrivals': 'Новинки',
+    'footer.deals': 'Акции',
+    'footer.vet': 'Ветеринария',
+    'footer.grooming': 'Груминг',
+    'footer.sitting': 'Передержка',
+    'footer.about': 'О нас',
+    'footer.contact': 'Контакты',
+    'footer.careers': 'Карьера',
+    'footer.copyright': 'Все права защищены.',
+
+    'signup.password_hint': 'По крайней мере 8 символов, буквы и цифры',
+    'signup.confirm_password': 'Подтвердите пароль',
+
+    'hot_deals': 'Горячие предложения этой недели',
+    'shop.by_pet': 'Магазины по видам питомцев',
+    'pet.Dogs': 'Собаки',
+    'pet.Cats': 'Кошки',
+    'pet.Fish': 'Рыбы',
+    'pet.Reptiles': 'Рептилии',
+    'pet.Birds': 'Птицы',
+    
+    // Subcategories (auto-generated)
+    'subcategory.Cats.Cat Toys': 'Игрушки для кошек',
+    'subcategory.Cats.Cat Food': 'Корм для кошек',
+    'subcategory.Cats.Cat Litter': 'Наполнитель для лотка',
+    'subcategory.Cats.Cat Beds': 'Лежаки для кошек',
+    'subcategory.Cats.Cat Scratchers': 'Когтеточки',
+
+    'subcategory.Dogs.Dog Toys': 'Игрушки для собак',
+    'subcategory.Dogs.Dog Food': 'Корм для собак',
+    'subcategory.Dogs.Dog Beds': 'Лежаки для собак',
+    'subcategory.Dogs.Dog Grooming': 'Груминг для собак',
+    'subcategory.Dogs.Dog Collars': 'Ошейники',
+
+    'subcategory.Rodents.Rodent Food': 'Корм для грызунов',
+    'subcategory.Rodents.Rodent Cages': 'Клетки для грызунов',
+    'subcategory.Rodents.Rodent Toys': 'Игрушки для грызунов',
+    'subcategory.Rodents.Bedding': 'Подстилка',
+    'subcategory.Rodents.Water Bottles': 'Поилки',
+
+    'subcategory.Fish.Fish Food': 'Корм для рыб',
+    'subcategory.Fish.Fish Tanks': 'Аквариумы',
+    'subcategory.Fish.Fish Filters': 'Фильтры для аквариума',
+    'subcategory.Fish.Aquatic Plants': 'Водные растения',
+    'subcategory.Fish.Fish Decorations': 'Декор для аквариума',
+
+    'subcategory.Reptiles.Reptile Food': 'Корм для рептилий',
+    'subcategory.Reptiles.Reptile Tanks': 'Террариумы',
+    'subcategory.Reptiles.Heating Lamps': 'Обогревательные лампы',
+    'subcategory.Reptiles.Substrate': 'Субстрат',
+    'subcategory.Reptiles.Hides': 'Укрытия',
+
+    'subcategory.Birds.Bird Food': 'Корм для птиц',
+    'subcategory.Birds.Bird Cages': 'Клетки для птиц',
+    'subcategory.Birds.Bird Toys': 'Игрушки для птиц',
+    'subcategory.Birds.Perches': 'Жердочки',
+    'subcategory.Birds.Bird Treats': 'Лакомства для птиц',
+
+    'subcategory.Vet.Medications': 'Лекарства',
+    'subcategory.Vet.Supplements': 'Добавки',
+    'subcategory.Vet.First Aid': 'Первая помощь',
+    'subcategory.Vet.Health Monitors': 'Мониторы здоровья',
+
+    'subcategory.Groomer.Shampoos': 'Шампуни',
+    'subcategory.Groomer.Brushes': 'Щетки',
+    'subcategory.Groomer.Clippers': 'Машинки для стрижки',
+    'subcategory.Groomer.Nail Care': 'Уход за когтями',
+    'subcategory.Groomer.Drying Tools': 'Средства для сушки',
+
+    'popular_items': 'Популярные товары',
+    'loading_products': 'Загрузка товаров...',
+    'loading': 'Загрузка...',
+    'error_prefix': 'Ошибка:',
+    'product_not_found': 'Товар не найден',
+    'add_to_cart': 'Добавить в корзину',
+    'added': 'Добавлено!',
+    'back_to_home': 'Назад на главную',
+    'search.title': 'Результаты поиска',
+    'search.showing_for': 'Показаны результаты для "{q}"',
+    'search.enter_term': 'Пожалуйста, введите поисковый запрос',
+    'search.no_results': 'По вашему запросу не найдено товаров.',
+    'search.found': 'Найдено {n} результатов',
+    'pagination.prev': '← Назад',
+    'pagination.next': 'Вперёд →',
+
+    'cart.empty_title': 'Ваша корзина пуста',
+    'cart.empty_desc': 'Добавьте товары для питомца, чтобы начать.',
+    'cart.continue': 'Продолжить покупки',
+    'cart.title': 'Корзина',
+    'cart.review': 'Проверьте ваши товары перед оформлением.',
+    'cart.qty': 'Кол-во',
+    'cart.remove': 'Удалить',
+    'cart.clear': 'Очистить корзину',
+    'cart.order_summary': 'Итог заказа',
+    'cart.subtotal': 'Промежуточный итог',
+    'cart.shipping': 'Доставка',
+    'cart.total': 'Итого',
+    'cart.proceed': 'Перейти к оформлению',
+    'cart.checkout_placeholder': 'Оформление временно недоступно.',
+    'cart.free': 'Бесплатно'
+  }
+}
+
+const LanguageContext = createContext({ lang: 'en', setLang: () => {}, t: (k) => k })
+
+export function LanguageProvider ({ children }) {
+  const [lang, setLangState] = useState(() => localStorage.getItem('lang') || 'en')
+
+  useEffect(() => {
+    const onStorage = () => setLangState(localStorage.getItem('lang') || 'en')
+    window.addEventListener('storage', onStorage)
+    window.addEventListener('lang-changed', onStorage)
+    return () => {
+      window.removeEventListener('storage', onStorage)
+      window.removeEventListener('lang-changed', onStorage)
+    }
+  }, [])
+
+  const setLang = async (next) => {
+    localStorage.setItem('lang', next)
+    setLangState(next)
+    window.dispatchEvent(new Event('lang-changed'))
+
+    // Persist to backend if logged in
+    if (localStorage.getItem('token')) {
+      try {
+        await authService.updateProfile({ lang: next })
+        window.dispatchEvent(new CustomEvent('lang-saved', { detail: { lang: next, success: true } }))
+      } catch (err) {
+        console.error('Failed to save language preference', err)
+        window.dispatchEvent(new CustomEvent('lang-saved', { detail: { lang: next, success: false } }))
+      }
+    } else {
+      // For guests, still indicate saved locally
+      window.dispatchEvent(new CustomEvent('lang-saved', { detail: { lang: next, success: true } }))
+    }
+  }
+
+  const t = (key) => {
+    return translations[lang]?.[key] || translations['en']?.[key] || key
+  }
+
+  return (
+    <LanguageContext.Provider value={{ lang, setLang, t }}>
+      {children}
+    </LanguageContext.Provider>
+  )
+}
+
+export const useLang = () => useContext(LanguageContext)

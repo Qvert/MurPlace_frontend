@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { fetchProductsByCategory } from '../utils/api'
 import { addToCart } from '../utils/cart'
+import { useLang } from '../i18n.jsx' 
 
 export default function Products() {
   const { category } = useParams()
@@ -10,6 +11,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [addedId, setAddedId] = useState(null)
+  const { t } = useLang()
 
   useEffect(() => {
     let mounted = true
@@ -34,14 +36,14 @@ export default function Products() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">{category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Products'}</h1>
+        <h1 className="text-3xl font-bold">{category ? category.charAt(0).toUpperCase() + category.slice(1) : t('search.title')}</h1>
         <div>
-          <button onClick={() => navigate(-1)} className="px-4 py-2 bg-gray-100 rounded">Back</button>
+          <button onClick={() => navigate(-1)} className="px-4 py-2 bg-gray-100 rounded">{t('pagination.prev')}</button>
         </div>
       </div>
 
-      {loading && <div className="text-center">Loading products...</div>}
-      {error && <div className="text-red-500">Error: {error}</div>}
+      {loading && <div className="text-center">{t('loading_products')}</div>}
+      {error && <div className="text-red-500">{t('error_prefix')} {error}</div>}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {products.map(p => (
@@ -70,7 +72,7 @@ export default function Products() {
                   setTimeout(() => setAddedId(null), 1200)
                 }}
               >
-                {addedId === p.id ? 'Added!' : 'Add to Cart'}
+                {addedId === p.id ? t('added') : t('add_to_cart')}
               </button>
             </div>
           </div>

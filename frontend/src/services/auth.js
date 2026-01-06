@@ -35,5 +35,14 @@ export const authService = {
     } catch (error) {
       throw error;
     }
+  },
+
+  async updateProfile(data) {
+    try {
+      const response = await api.patch('/api/profile/', data);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
   }
 };

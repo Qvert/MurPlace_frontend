@@ -20,6 +20,14 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Добавить язык (если выбран пользователем)
+    const lang = localStorage.getItem('lang');
+    if (lang) {
+      config.headers['X-Lang'] = lang;
+      // Установим Accept-Language для совместимости с некоторыми бэкендами
+      config.headers['Accept-Language'] = lang === 'ru' ? 'ru' : 'en';
+    }
+
     return config;
   },
   (error) => {
