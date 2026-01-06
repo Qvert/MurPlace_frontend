@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { postJSON } from '../utils/api'
+import { authService } from '../services/auth'
 import { useLang } from '../i18n.jsx'
 
 export default function Signup() {
@@ -62,13 +62,18 @@ export default function Signup() {
     try {
       // Send only necessary fields (exclude confirmPassword)
       const { confirmPassword, ...payload } = form
-      const data = await postJSON('/api/signup/', payload)
-      // Store token if provided by backend
+      const data = await authService.signup(payload)
+
+      // If backend returned a token (no email confirmation required) store it and go home
       if (data.token) {
+        // `authService.signup` sets token/header as needed, but keep local guard here
         localStorage.setItem('token', data.token)
+        navigate('/')
+      } else {
+        // Otherwise assume confirmation is required — redirect to confirmation page
+        // Include mockCode (dev-only) when present so the Confirm page can show it
+        navigate('/confirm', { state: { email: payload.email, message: data.message, mockCode: data.mockCode } })
       }
-      // If postJSON doesn't throw, the request was successful (2xx status)
-      navigate('/')
     } catch (err) {
       // Handle different error types
       if (err.message) {
