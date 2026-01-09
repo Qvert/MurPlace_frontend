@@ -70,6 +70,9 @@ const translations = {
     'pet.Fish': 'Fish',
     'pet.Reptiles': 'Reptiles',
     'pet.Birds': 'Birds',
+    'pet.Rodents': 'Rodents',
+    'pet.Vet': 'Veterinary',
+    'pet.Groomer': 'Grooming',
 
     // Subcategories (auto-generated)
     'subcategory.Cats.Cat Toys': 'Cat Toys',
@@ -250,6 +253,9 @@ const translations = {
     'pet.Fish': 'Рыбы',
     'pet.Reptiles': 'Рептилии',
     'pet.Birds': 'Птицы',
+    'pet.Rodents': 'Грызуны',
+    'pet.Vet': 'Ветеринария',
+    'pet.Groomer': 'Груминг',
     
     // Subcategories (auto-generated)
     'subcategory.Cats.Cat Toys': 'Игрушки для кошек',

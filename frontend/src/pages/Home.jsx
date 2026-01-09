@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLang } from '../i18n.jsx' 
+import { mockPopularProducts } from '../utils/mockProducts.js' 
 
 export default function Home() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isMock, setIsMock] = useState(false)
   const [theme, setTheme] = useState(() => {
     const stored = localStorage.getItem('theme')
     if (stored === 'dark' || stored === 'light') return stored
@@ -27,7 +29,10 @@ export default function Home() {
           // dynamic import proto decoder
           const { decodeProductsBuffer } = await import('../utils/proto.js')
           const prods = await decodeProductsBuffer(buffer)
-          if (mounted) setProducts(prods)
+          if (mounted) {
+            setProducts(prods)
+            setIsMock(false)
+          }
           return
         }
       } catch (e) {
@@ -37,11 +42,35 @@ export default function Home() {
       // fallback to JSON
       try{
         const res = await fetch('/api/products/')
-        if (!res.ok) throw new Error('Failed to fetch JSON')
-        const data = await res.json()
-        if (mounted) setProducts(data.products || [])
+        if (!res.ok) {
+          // Non-OK responses -> use mock data silently (avoid surfacing 'Failed to fetch JSON' to the UI)
+          if (mounted) {
+            setProducts(mockPopularProducts)
+            setIsMock(true)
+          }
+        } else {
+          const data = await res.json()
+          const finalProducts = data.products || []
+          if (mounted) {
+            if (finalProducts.length === 0) {
+              // Use a small mocked list when the API returns nothing
+              setProducts(mockPopularProducts)
+              setIsMock(true)
+            } else {
+              setProducts(finalProducts)
+              setIsMock(false)
+            }
+          }
+        }
       } catch (err){
-        if (mounted) setError(err.message)
+        if (mounted) {
+          // If the API call fails entirely, show the mock products to keep the UI useful
+          setProducts(mockPopularProducts)
+          setIsMock(true)
+          // Don't show transient fetch errors in UI; log instead
+          setError(null)
+          console.debug('Products fetch failed:', err)
+        }
       } finally {
         if (mounted) setLoading(false)
       }
@@ -100,7 +129,10 @@ export default function Home() {
 
       {/* Popular Items - dynamic from API */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6">{t('popular_items')}</h2>
+        <h2 className="text-3xl font-bold mb-6 flex items-baseline">
+          {t('popular_items')}
+          {isMock && <span className="ml-3 text-sm text-gray-500 italic">Mock data</span>}
+        </h2>
 
         {loading && <div className="text-center">{t('loading_products')}</div>}
         {error && <div className="text-red-500">{t('error_prefix')} {error}</div>}
