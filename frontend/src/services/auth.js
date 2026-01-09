@@ -138,37 +138,34 @@ export const authService = {
     }
   },
 
-  async confirmEmail({ token, email }) {
+  async confirmEmail({ email }) {
     if (USE_MOCK) {
-      const expected = _getMockCode(email)
-      if (!expected) {
-        throw { message: 'No confirmation code found for this email. Please request a confirmation email.' }
+      // In mock mode, just check if verification is done
+      const verified = _getMockCode(email) !== undefined
+      if (verified) {
+        const accessToken = `mock-access-${Date.now()}`
+        const refreshToken = `mock-refresh-${Date.now()}`
+        localStorage.setItem('token', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+        api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+        return { verified: true, access: accessToken, refresh: refreshToken }
       }
-      if (String(token) !== String(expected)) {
-        throw { message: 'Invalid confirmation code' }
-      }
-
-      // On success persist mock JWT tokens
-      const accessToken = `mock-access-${Date.now()}`
-      const refreshToken = `mock-refresh-${Date.now()}`
-      localStorage.setItem('token', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
-      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-      return { message: 'Email confirmed', access: accessToken, refresh: refreshToken }
+      return { verified: false }
     }
 
     try {
-      const response = await api.post('/api/email/verify/', { token, email })
+      const response = await api.get('/api/email/verification-status/')
 
-      // Handle JWT tokens (access + refresh)
-      if (response.data?.access) {
-        localStorage.setItem('token', response.data.access)
-        localStorage.setItem('refreshToken', response.data.refresh)
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
-      } else if (response.data?.token) {
-        // Fallback for old token system
-        localStorage.setItem('token', response.data.token)
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+      // If email is verified, handle JWT tokens
+      if (response.data?.verified) {
+        if (response.data?.access) {
+          localStorage.setItem('token', response.data.access)
+          localStorage.setItem('refreshToken', response.data.refresh)
+          api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
+        } else if (response.data?.token) {
+          localStorage.setItem('token', response.data.token)
+          api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+        }
       }
 
       return response.data
@@ -180,13 +177,17 @@ export const authService = {
   async resendConfirmation(email) {
     if (USE_MOCK) {
       const code = _setMockCode(email)
+      console.log('Mock: Resending confirmation to', email, 'Code:', code)
       return { message: 'Confirmation email resent', mockCode: code }
     }
 
     try {
+      console.log('Sending email verification request to /api/email/request-verification/', { email })
       const response = await api.post('/api/email/request-verification/', { email })
+      console.log('Email verification request response:', response.data)
       return response.data
     } catch (error) {
+      console.error('Email verification request failed:', error)
       throw error.response?.data || error
     }
   },

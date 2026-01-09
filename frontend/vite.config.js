@@ -23,18 +23,10 @@ export default defineConfig({
       '/admin': {
         target: 'http://localhost:8000',
         changeOrigin: true,
-      },
+      }
+    }
   },
   build: {
-    outDir: 'dist',
-    rollupOptions: {
-        output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom', 'react-router-dom'],
-          }
-        }
-      }
-    },
     outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {

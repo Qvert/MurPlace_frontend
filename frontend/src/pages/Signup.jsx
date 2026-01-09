@@ -69,8 +69,13 @@ export default function Signup() {
         // `authService.signup` sets token/header as needed
         navigate('/')
       } else {
-        // Otherwise assume confirmation is required — redirect to confirmation page
-        // Include mockCode (dev-only) when present so the Confirm page can show it
+        // Otherwise email confirmation is required — request verification email
+        try {
+          await authService.resendConfirmation(payload.email)
+        } catch (err) {
+          console.error('Failed to send verification email:', err)
+        }
+        // Redirect to confirmation page
         navigate('/confirm', { state: { email: payload.email, message: data.message, mockCode: data.mockCode } })
       }
     } catch (err) {

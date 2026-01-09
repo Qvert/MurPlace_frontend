@@ -45,7 +45,7 @@ python manage.py runserver 8000
 You need to build the frontend with Vite and serve the built files using the backend that you have.
 
 ```bash
-npm run build
+
 ```
 
 copy the files from dist into the static folder of your backend. and update the server to serve the pages in question. In Django for example, you'll add the views for em.
