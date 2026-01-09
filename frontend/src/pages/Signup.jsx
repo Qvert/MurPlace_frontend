@@ -64,10 +64,9 @@ export default function Signup() {
       const { confirmPassword, ...payload } = form
       const data = await authService.signup(payload)
 
-      // If backend returned a token (no email confirmation required) store it and go home
-      if (data.token) {
-        // `authService.signup` sets token/header as needed, but keep local guard here
-        localStorage.setItem('token', data.token)
+      // If backend returned tokens (no email confirmation required) - already stored by authService
+      if (data.access || data.token) {
+        // `authService.signup` sets token/header as needed
         navigate('/')
       } else {
         // Otherwise assume confirmation is required — redirect to confirmation page

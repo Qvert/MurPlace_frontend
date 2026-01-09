@@ -18,17 +18,25 @@ const _getMockCode = (email) => _getMockStore()[email]
 export const authService = {
   async login(email, password) {
     if (USE_MOCK) {
-      // In mock mode accept any password and return a token
-      const token = `mock-token-${Date.now()}`
-      localStorage.setItem('token', token)
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      return { token }
+      // In mock mode accept any password and return JWT-like tokens
+      const accessToken = `mock-access-${Date.now()}`
+      const refreshToken = `mock-refresh-${Date.now()}`
+      localStorage.setItem('token', accessToken)
+      localStorage.setItem('refreshToken', refreshToken)
+      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+      return { access: accessToken, refresh: refreshToken }
     }
 
     try {
       const response = await api.post('/api/login/', { email, password })
 
-      if (response.data.token) {
+      // Handle JWT tokens (access + refresh)
+      if (response.data.access) {
+        localStorage.setItem('token', response.data.access)
+        localStorage.setItem('refreshToken', response.data.refresh)
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
+      } else if (response.data.token) {
+        // Fallback for old token system
         localStorage.setItem('token', response.data.token)
         api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
       }
@@ -44,7 +52,41 @@ export const authService = {
       await api.post('/api/logout/')
     } finally {
       localStorage.removeItem('token')
+      localStorage.removeItem('refreshToken')
       delete api.defaults.headers.common['Authorization']
+    }
+  },
+
+  async refreshToken() {
+    const refreshToken = localStorage.getItem('refreshToken')
+    if (!refreshToken) {
+      throw new Error('No refresh token available')
+    }
+
+    if (USE_MOCK) {
+      // In mock mode, generate a new access token
+      const accessToken = `mock-access-${Date.now()}`
+      localStorage.setItem('token', accessToken)
+      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+      return accessToken
+    }
+
+    try {
+      const response = await api.post('/api/token/refresh/', { refresh: refreshToken })
+      
+      if (response.data.access) {
+        localStorage.setItem('token', response.data.access)
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
+        return response.data.access
+      }
+      
+      throw new Error('No access token in refresh response')
+    } catch (error) {
+      // If refresh fails, clear tokens and force re-login
+      localStorage.removeItem('token')
+      localStorage.removeItem('refreshToken')
+      delete api.defaults.headers.common['Authorization']
+      throw error
     }
   },
 
@@ -79,8 +121,13 @@ export const authService = {
     try {
       const response = await api.post('/api/signup/', data)
 
-      // If backend returns a token (signup also logs user in), persist it
-      if (response.data?.token) {
+      // Handle JWT tokens (access + refresh)
+      if (response.data?.access) {
+        localStorage.setItem('token', response.data.access)
+        localStorage.setItem('refreshToken', response.data.refresh)
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
+      } else if (response.data?.token) {
+        // Fallback for old token system
         localStorage.setItem('token', response.data.token)
         api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
       }
@@ -101,18 +148,25 @@ export const authService = {
         throw { message: 'Invalid confirmation code' }
       }
 
-      // On success persist a mock auth token
-      const tokenStr = `mock-token-${Date.now()}`
-      localStorage.setItem('token', tokenStr)
-      api.defaults.headers.common['Authorization'] = `Bearer ${tokenStr}`
-      return { message: 'Email confirmed', token: tokenStr }
+      // On success persist mock JWT tokens
+      const accessToken = `mock-access-${Date.now()}`
+      const refreshToken = `mock-refresh-${Date.now()}`
+      localStorage.setItem('token', accessToken)
+      localStorage.setItem('refreshToken', refreshToken)
+      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+      return { message: 'Email confirmed', access: accessToken, refresh: refreshToken }
     }
 
     try {
-      const response = await api.post('/api/confirm/', { token, email })
+      const response = await api.post('/api/email/verify/', { token, email })
 
-      // Persist token if backend returned one after confirmation
-      if (response.data?.token) {
+      // Handle JWT tokens (access + refresh)
+      if (response.data?.access) {
+        localStorage.setItem('token', response.data.access)
+        localStorage.setItem('refreshToken', response.data.refresh)
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
+      } else if (response.data?.token) {
+        // Fallback for old token system
         localStorage.setItem('token', response.data.token)
         api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
       }
@@ -130,7 +184,20 @@ export const authService = {
     }
 
     try {
-      const response = await api.post('/api/resend-confirmation/', { email })
+      const response = await api.post('/api/email/request-verification/', { email })
+      return response.data
+    } catch (error) {
+      throw error.response?.data || error
+    }
+  },
+
+  async checkEmailVerificationStatus() {
+    if (USE_MOCK) {
+      return { verified: true }
+    }
+
+    try {
+      const response = await api.get('/api/email/verification-status/')
       return response.data
     } catch (error) {
       throw error.response?.data || error

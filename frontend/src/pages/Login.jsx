@@ -15,7 +15,14 @@ export default function Login() {
     setError(null)
     try {
       const data = await postJSON('/api/login/', { username, password })
-      if (data.token) {
+      // Handle JWT tokens (access + refresh)
+      if (data.access) {
+        localStorage.setItem('token', data.access)
+        localStorage.setItem('refreshToken', data.refresh)
+        window.dispatchEvent(new Event('storage'))
+        navigate('/account')
+      } else if (data.token) {
+        // Fallback for old token system
         localStorage.setItem('token', data.token)
         window.dispatchEvent(new Event('storage'))
         navigate('/account')

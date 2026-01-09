@@ -17,20 +17,13 @@ export default function ConfirmEmail() {
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState(null)
 
-  // If a mockCode was passed in navigation state (dev/mock mode), show it and prefill
-  const initialMockCode = location.state?.mockCode || ''
   useEffect(() => {
     // If token present in URL, try to confirm automatically
     if (tokenFromUrl) {
       handleConfirm(tokenFromUrl)
     }
-
-    if (initialMockCode) {
-      setMessage((m) => (m ? m + ' ' : '') + t('confirm.dev_code_display').replace('{code}', initialMockCode))
-      setCode(initialMockCode)
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenFromUrl, initialMockCode])
+  }, [tokenFromUrl])
 
   async function handleConfirm(tokenToUse) {
     setError(null)
@@ -39,10 +32,13 @@ export default function ConfirmEmail() {
       const res = await authService.confirmEmail({ token: tokenToUse || code, email })
       setStatus('success')
 
-      // If backend provided a token after confirmation, sign-in automatically
-      if (res.token) {
+      // If backend provided access token after confirmation, sign-in automatically
+      if (res.access) {
+        // authService already stored tokens
+        navigate('/')
+      } else if (res.token) {
+        // Fallback for old token system
         localStorage.setItem('token', res.token)
-        // authService already set header internally, but ensure
         navigate('/')
       } else {
         // otherwise go to login with a success message
@@ -65,14 +61,9 @@ export default function ConfirmEmail() {
     setError(null)
     setStatus('sending')
     try {
-      const res = await authService.resendConfirmation(email)
+      await authService.resendConfirmation(email)
       setStatus('sent')
-      if (res?.mockCode) {
-        setMessage(t('confirm.resent_message') + ' ' + t('confirm.dev_code_display').replace('{code}', res.mockCode))
-        setCode(res.mockCode)
-      } else {
-        setMessage(t('confirm.resent_message'))
-      }
+      setMessage(t('confirm.resent_message'))
     } catch (err) {
       setStatus('error')
       setError(err?.message || t('confirm.error_generic'))

@@ -41,14 +41,50 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // If unauthorized, redirect to login
+    // If unauthorized, try to refresh token
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       
-      // Clear token and redirect to login
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-      return Promise.reject(error);
+      const refreshToken = localStorage.getItem('refreshToken');
+      
+      // If we have a refresh token, try to refresh the access token
+      if (refreshToken) {
+        try {
+          const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/api/token/refresh/`,
+            { refresh: refreshToken },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          
+          if (response.data.access) {
+            // Store new access token
+            localStorage.setItem('token', response.data.access);
+            
+            // Update authorization header
+            api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+            originalRequest.headers['Authorization'] = `Bearer ${response.data.access}`;
+            
+            // Retry the original request with new token
+            return api(originalRequest);
+          }
+        } catch (refreshError) {
+          // Refresh failed, clear tokens and redirect to login
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          delete api.defaults.headers.common['Authorization'];
+          window.location.href = '/login';
+          return Promise.reject(refreshError);
+        }
+      } else {
+        // No refresh token, redirect to login
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
     }
 
     // Обработка других ошибок

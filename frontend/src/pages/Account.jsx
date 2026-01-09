@@ -29,6 +29,7 @@ export default function Account() {
           // If unauthorized, redirect to login
           if (err.response?.status === 401) {
             localStorage.removeItem('token')
+            localStorage.removeItem('refreshToken')
             navigate('/login')
           }
         }
