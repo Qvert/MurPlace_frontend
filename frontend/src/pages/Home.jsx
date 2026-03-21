@@ -96,7 +96,7 @@ export default function Home() {
       {/* Deals Carousel */}
       <section className="mb-12">
         <div className="relative rounded-xl overflow-hidden h-64">
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+          <div className="absolute inset-0 flex  items-center justify-center bg-cover bg-center texture-asfalt">
             <h2 className="text-4xl font-bold text-white">{t('hot_deals')}</h2>
           </div>
         </div>
@@ -117,7 +117,9 @@ export default function Home() {
               <button
                 key={cat.name}
                 onClick={() => navigate(`/products/${cat.name.toLowerCase()}`)}
-                className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 w-full sm:w-auto text-left"
+                className={`flex items-center p-3 rounded-lg transition-colors duration-200 w-full sm:w-auto text-left ${
+                  theme === 'dark' ? 'hover:bg-indigo-00' : 'hover:bg-indigo-100'
+                }`}
               >
                 <img src={theme === 'dark' ? cat.imgDark : cat.img} alt={cat.name} className="w-16 h-16 rounded-full object-cover mr-4" />
                 <span className="text-xl font-semibold">{cat.name}</span>

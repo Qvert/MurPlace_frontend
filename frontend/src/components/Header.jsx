@@ -28,8 +28,10 @@ export default function Header(){
   })
 
   const searchInputRef = useRef(null)
+  const languageMenuRef = useRef(null)
   const { lang, setLang, t } = useLang()
   const [langSavedMsg, setLangSavedMsg] = useState('')
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
 
   useEffect(() => {
     const onSaved = (e) => {
@@ -65,6 +67,21 @@ export default function Header(){
     localStorage.setItem('theme', theme)
   }, [theme])
 
+  useEffect(() => {
+    const closeOnOutsideClick = (e) => {
+      if (languageMenuRef.current && !languageMenuRef.current.contains(e.target)) {
+        setIsLanguageMenuOpen(false)
+      }
+    }
+
+    window.addEventListener('mousedown', closeOnOutsideClick)
+    window.addEventListener('touchstart', closeOnOutsideClick)
+    return () => {
+      window.removeEventListener('mousedown', closeOnOutsideClick)
+      window.removeEventListener('touchstart', closeOnOutsideClick)
+    }
+  }, [])
+
   const handleSearchSubmit = () => {
     const trimmedQuery = searchQuery.trim()
     if (!trimmedQuery) {
@@ -88,12 +105,12 @@ export default function Header(){
 
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="site-header bg-white shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center">
+        <Link to="/" className="flex items-center">
           <img src={theme === 'dark' ? '/static/logo_dark.png' : '/static/logo.png'} alt={`${t('app.title')} Logo`} className="h-12 w-12 mr-2" />
-          <h1 className="text-2xl font-bold text-indigo-600">{t('app.title')}</h1>
-        </div>
+          <h1  className="site-title text-2xl font-bold text-indigo-600">{t('app.title')}</h1>
+        </Link>
 
           <div className="flex-1 mx-8">
           <div className="relative">
@@ -119,24 +136,64 @@ export default function Header(){
           <div className="flex items-center space-x-3">
             <button
               onClick={toggleTheme}
-              className="flex items-center px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
+              className={`flex items-center px-3 py-2 border border-gray-300 rounded-lg text-gray-700 ${
+                theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'
+              }`}
               aria-label="Toggle theme"
             >
               <span className="mr-2" aria-hidden="true">{theme === 'dark' ? '☀' : '🌙'}</span>
               <span>{theme === 'dark' ? t('theme.light') : t('theme.dark')}</span>
             </button>
 
-            <label className="flex items-center px-2 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">
-              <select
-                value={lang}
-                onChange={(e) => setLang(e.target.value)}
-                className="bg-transparent outline-none"
+            <div ref={languageMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setIsLanguageMenuOpen((prev) => !prev)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setIsLanguageMenuOpen(false)
+                  }
+                }}
+                className={`flex items-center px-3 py-2 border border-gray-300 rounded-lg text-gray-700 ${
+                  theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'
+                }`}
                 aria-label={t('header.select_language')}
+                aria-haspopup="listbox"
+                aria-expanded={isLanguageMenuOpen}
               >
-                <option value="en">EN</option>
-                <option value="ru">RU</option>
-              </select>
-            </label>
+                <span>{lang.toUpperCase()}</span>
+                <span className="ml-2 text-xs" aria-hidden="true">▾</span>
+              </button>
+
+              {isLanguageMenuOpen && (
+                <ul
+                  role="listbox"
+                  className={`absolute right-0 mt-1 w-20 border rounded-lg shadow-lg z-[100] py-1 ${
+                    theme === 'dark' ? 'bg-white border-indigo-200' : 'bg-white border-gray-300'
+                  }`}
+                >
+                  {['en', 'ru'].map((languageCode) => (
+                    <li key={languageCode}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={lang === languageCode}
+                        onClick={() => {
+                          setLang(languageCode)
+                          setIsLanguageMenuOpen(false)
+                        }}
+                        style={{ 'border-radius': '10px' }}
+                        className={`w-full text-left px-3 py-2 ${
+                          theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'
+                        } ${lang === languageCode ? 'text-indigo-600 font-medium' : 'text-gray-700'}`}
+                      >
+                        {languageCode.toUpperCase()}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
             {langSavedMsg && (
               <div className="ml-3 text-sm text-green-600 font-medium">{langSavedMsg}</div>
@@ -188,19 +245,23 @@ export default function Header(){
               >
                 <a
                   href={`/products/${category.toLowerCase()}`}
-                  className="px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors block whitespace-nowrap"
+                  className={`px-4 py-2 rounded-full border border-gray-300 text-gray-700 ${theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'} transition-colors block whitespace-nowrap`}
                 >
                   {t(`pet.${category}`) || category}
                 </a>
                 
                 {/* Dropdown Menu */}
                 {openDropdown === category && (
-                  <div className="absolute left-0 top-full mt-0 w-48 bg-white border border-gray-300 rounded-lg shadow-2xl z-50 py-2">
+                  <div className={`absolute left-0 top-full mt-0 w-48 border rounded-lg shadow-2xl z-50 py-2 ${
+                    theme === 'dark' ? 'bg-white border-indigo-200' : 'bg-white border-gray-300'
+                  }`}>
                     {categoryData[category].map((subcategory) => (
                       <a
                         key={subcategory}
                         href={`/products/${category.toLowerCase()}?subcategory=${encodeURIComponent(subcategory)}`}
-                        className="block px-4 py-2 text-gray-700 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
+                        className={`block px-4 py-2 text-gray-700  transition-colors ${
+                          theme === 'dark' ? 'hover:bg-indigo-700 hover:text-indigo-400' : 'hover:bg-indigo-100 hover:text-indigo-600'
+                        }`}
                       >
                         {t(`subcategory.${category}.${subcategory}`) || subcategory}
                       </a>

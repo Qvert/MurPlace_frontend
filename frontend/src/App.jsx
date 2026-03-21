@@ -14,10 +14,10 @@ import Footer from './components/Footer'
 
 export default function App() {
   return (
-    <div>
+    <div className="site-shell">
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="site-main container mx-auto px-4 py-8">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

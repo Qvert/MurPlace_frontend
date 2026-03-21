@@ -1,12 +1,28 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import fs from 'fs'
+import path from 'path'
 
 const PROXY_TARGET = process.env.VITE_PROXY_TARGET || 'http://127.0.0.1:8000'
+const DEV_MODE = process.env.VITE_DEV_MODE === 'true'
 
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
+    host: '127.0.0.1',
+    port: 4173,
+    strictPort: true,
+    middlewares: DEV_MODE ? [
+      (req, res, next) => {
+        if (req.url.startsWith('/static')) {
+          const filePath = path.join(process.cwd(), 'public', req.url.slice(1))
+          if (fs.existsSync(filePath)) {
+            return res.end(fs.readFileSync(filePath))
+          }
+        }
+        next()
+      }
+    ] : [],
     proxy: {
       '/api': {
         target: PROXY_TARGET,
@@ -15,13 +31,13 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, '/api')
       },
       // Serve Django static files through proxy if needed
-      '/static': {
+      '/static': DEV_MODE ? undefined : {
         target: PROXY_TARGET,
         changeOrigin: true,
         secure: false
       },
       '/admin': {
-        target: 'http://localhost:8000',
+        target: PROXY_TARGET,
         changeOrigin: true,
       }
     }

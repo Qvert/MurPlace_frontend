@@ -54,7 +54,7 @@ export default function Account() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-8 text-center">
+      <div className="account-shell max-w-2xl mx-auto bg-white rounded-lg shadow p-8 text-center">
         <div className="text-gray-600">{t('account.loading')}</div>
       </div>
     )
@@ -62,7 +62,7 @@ export default function Account() {
 
   if (error) {
     return (
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-8">
+      <div className="account-shell max-w-2xl mx-auto bg-white rounded-lg shadow p-8">
         <div className="text-red-500 mb-4">{error}</div>
         <Link to="/login" className="text-indigo-600 hover:text-indigo-700">{t('account.go_to_login')}</Link>
       </div>
@@ -73,9 +73,9 @@ export default function Account() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6">
-          <h1 className="text-3xl font-bold text-white">{t('account.title')}</h1>
+      <div className="account-shell bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="account-banner bg-gradient-to-r from-indigo-500 to-purple-600 p-6">
+          <h1 className="site-title text-3xl font-bold text-white">{t('account.title')}</h1>
           <p className="text-indigo-100 mt-1">{t('account.subtitle')}</p>
         </div>
 

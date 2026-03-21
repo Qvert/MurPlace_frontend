@@ -1,4 +1,11 @@
 {
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start",
+    "frontend:install": "npm --prefix frontend install"
+  },
   "dependencies": {
     "react-router-dom": "^7.10.1"
   }
