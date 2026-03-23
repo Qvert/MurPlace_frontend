@@ -16,6 +16,15 @@ const _setMockCode = (email) => {
 const _getMockCode = (email) => _getMockStore()[email]
 
 export const authService = {
+    async getTelegramLink() {
+      try {
+        // Этот эндпоинт мы описывали в Django views (generate_telegram_link)
+        const response = await api.get('/api/telegram/generate-link/')
+        return response.data // ожидаем { link: "https://t.me/..." }
+      } catch (error) {
+        throw error.response?.data || error
+      }
+    },
   async login(email, password) {
     if (USE_MOCK) {
       // In mock mode accept any password and return JWT-like tokens
@@ -204,4 +213,5 @@ export const authService = {
       throw error.response?.data || error
     }
   }
+
 };
