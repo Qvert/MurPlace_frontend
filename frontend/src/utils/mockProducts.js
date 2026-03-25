@@ -42,3 +42,30 @@ export const mockPopularProducts = [
     price: 34.50
   }
 ]
+
+export const mockDealsCarousel = [
+  {
+    id: 'deal-mock-1',
+    title: 'Weekend Savings for Dogs',
+    subtitle: 'Up to 35% off dog food, treats, and essentials.',
+    image_url: 'https://placehold.co/1200x500?text=Dog+Deals',
+    link: '/products/dogs',
+    cta_label: 'Shop Dog Deals'
+  },
+  {
+    id: 'deal-mock-2',
+    title: 'Cat Comfort Collection',
+    subtitle: 'Save on cat trees, toys, and wellness products.',
+    image_url: 'https://placehold.co/1200x500?text=Cat+Deals',
+    link: '/products/cats',
+    cta_label: 'Explore Cat Deals'
+  },
+  {
+    id: 'deal-mock-3',
+    title: 'Aquarium & Reptile Essentials',
+    subtitle: 'Limited-time discounts on habitat must-haves.',
+    image_url: 'https://placehold.co/1200x500?text=Aquatic+and+Reptile+Deals',
+    link: '/products/fish',
+    cta_label: 'View Offers'
+  }
+]
