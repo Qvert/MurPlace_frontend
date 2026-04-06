@@ -14,13 +14,11 @@ export default function ProductDetail(){
   useEffect(() => {
     let mounted = true
     setLoading(true)
-    fetch('/api/products/')
-      .then(res => { if (!res.ok) throw new Error('Failed to fetch products'); return res.json() })
+    fetch(`/api/products/${id}/`)
+      .then(res => { if (!res.ok) throw new Error('Failed to fetch product'); return res.json() })
       .then(data => {
         if (!mounted) return
-        const found = (data.products || []).find(p => String(p.id) === String(id))
-        if (found) setProduct(found)
-        else setError('Product not found')
+        setProduct(data.product || data)
       })
       .catch(err => { if (mounted) setError(err.message) })
       .finally(() => { if (mounted) setLoading(false) })

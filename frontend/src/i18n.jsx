@@ -167,7 +167,29 @@ const translations = {
     'footer.about': 'About Us',
     'footer.contact': 'Contact',
     'footer.careers': 'Careers',
-    'footer.copyright': 'All rights reserved.'
+    'footer.copyright': 'All rights reserved.',
+
+    'all_products.description': 'Browse every available category and jump straight into products for your pet.',
+    'all_products.open_products': 'Open products',
+
+    'veterinary.description': 'Find products and care essentials recommended for pet health and daily prevention.',
+    'veterinary.popular_categories': 'Popular veterinary categories',
+    'veterinary.list.medications': 'Medications',
+    'veterinary.list.supplements': 'Supplements',
+    'veterinary.list.first_aid_kits': 'First aid kits',
+    'veterinary.list.health_monitors': 'Health monitors',
+    'veterinary.when_to_contact': 'When to contact a vet',
+    'veterinary.contact_tip': 'If your pet has urgent symptoms, always contact your veterinarian first before purchasing any treatment.',
+    'veterinary.browse_button': 'Browse veterinary products',
+
+    'about.p1': 'MurPlace is a pet-focused marketplace built to help owners quickly find trusted products, compare options, and care for every stage of a pet\'s life.',
+    'about.p2': 'Our catalog is organized by pet type and practical needs, from everyday food and grooming to veterinary essentials.',
+    'about.p3': 'We are continuously improving search, recommendations, and delivery options to make pet care easier.',
+
+    'contact.description': 'Need help with orders, product availability, or your account? Reach out and we will assist you.',
+    'contact.customer_support': 'Customer Support',
+    'contact.business_inquiries': 'Business Inquiries',
+    'contact.business_hours': 'Mon-Fri, 09:00-18:00'
   },
   ru: {
     'app.title': 'Муркетплейс',
@@ -228,6 +250,28 @@ const translations = {
     'footer.contact': 'Контакты',
     'footer.careers': 'Карьера',
     'footer.copyright': 'Все права защищены.',
+
+    'all_products.description': 'Просмотрите все доступные категории и сразу переходите к товарам для вашего питомца.',
+    'all_products.open_products': 'Открыть товары',
+
+    'veterinary.description': 'Найдите товары и средства ухода, рекомендованные для здоровья питомца и ежедневной профилактики.',
+    'veterinary.popular_categories': 'Популярные ветеринарные категории',
+    'veterinary.list.medications': 'Лекарства',
+    'veterinary.list.supplements': 'Добавки',
+    'veterinary.list.first_aid_kits': 'Аптечки первой помощи',
+    'veterinary.list.health_monitors': 'Мониторы здоровья',
+    'veterinary.when_to_contact': 'Когда обращаться к ветеринару',
+    'veterinary.contact_tip': 'Если у питомца есть срочные симптомы, сначала свяжитесь с ветеринаром перед покупкой любого лечения.',
+    'veterinary.browse_button': 'Перейти к ветеринарным товарам',
+
+    'about.p1': 'MurPlace — это маркетплейс для питомцев, созданный, чтобы владельцы быстро находили проверенные товары, сравнивали варианты и заботились о питомце на каждом этапе жизни.',
+    'about.p2': 'Наш каталог организован по типам питомцев и практическим потребностям: от повседневного корма и груминга до ветеринарных товаров.',
+    'about.p3': 'Мы постоянно улучшаем поиск, рекомендации и варианты доставки, чтобы уход за питомцами был проще.',
+
+    'contact.description': 'Нужна помощь с заказами, наличием товаров или аккаунтом? Свяжитесь с нами, и мы поможем.',
+    'contact.customer_support': 'Поддержка клиентов',
+    'contact.business_inquiries': 'Бизнес-запросы',
+    'contact.business_hours': 'Пн-Пт, 09:00-18:00',
 
     'signup.password_hint': 'По крайней мере 8 символов, буквы и цифры',
     'signup.confirm_password': 'Подтвердите пароль',

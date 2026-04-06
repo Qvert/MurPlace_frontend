@@ -39,7 +39,7 @@ export default function Login() {
   return (
     <div className="max-w-md mx-auto">
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-center">
+        <div className="bg-indigo-600 p-6 text-center">
           <h2 className="text-2xl font-bold text-white">{t('login.title')}</h2>
         </div>
         <div className="p-6">

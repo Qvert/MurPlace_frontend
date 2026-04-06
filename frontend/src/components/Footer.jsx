@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useLang } from '../i18n.jsx' 
 
 export default function Footer(){
@@ -29,10 +30,10 @@ export default function Footer(){
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
           <span className="site-title font-bold">{t('app.title')}</span>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-indigo-300">{t('footer.all_products')}</a>
-            <a href="#" className="hover:text-indigo-300">{t('footer.vet')}</a>
-            <a href="#" className="hover:text-indigo-300">{t('footer.about')}</a>
-            <a href="#" className="hover:text-indigo-300">{t('footer.contact')}</a>
+            <Link to="/all-products" className="hover:text-indigo-300">{t('footer.all_products')}</Link>
+            <Link to="/veterinary" className="hover:text-indigo-300">{t('footer.vet')}</Link>
+            <Link to="/about" className="hover:text-indigo-300">{t('footer.about')}</Link>
+            <Link to="/contact" className="hover:text-indigo-300">{t('footer.contact')}</Link>
           </div>
           <span className="text-gray-400 text-xs">&copy; 2026 {t('app.title')}</span>
         </div>

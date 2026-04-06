@@ -9,6 +9,10 @@ import Products from './pages/Products'
 import SearchResults from './pages/SearchResults'
 import Cart from './pages/Cart'
 import Account from './pages/Account'
+import AllProducts from './pages/AllProducts'
+import Veterinary from './pages/Veterinary'
+import About from './pages/About'
+import Contact from './pages/Contact'
 import Header from './components/Header'
 import Footer from './components/Footer'
 
@@ -28,6 +32,10 @@ export default function App() {
           <Route path="/search" element={<SearchResults />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/all-products" element={<AllProducts />} />
+          <Route path="/veterinary" element={<Veterinary />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
 
