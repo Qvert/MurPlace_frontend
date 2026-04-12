@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import fs from 'fs'
 import path from 'path'
 
-const PROXY_TARGET = process.env.VITE_PROXY_TARGET || 'http://backend:8000'
+const PROXY_TARGET = process.env.VITE_PROXY_TARGET || 'http://localhost:8000'
 const DEV_MODE = process.env.VITE_DEV_MODE === 'true'
 
 export default defineConfig({
