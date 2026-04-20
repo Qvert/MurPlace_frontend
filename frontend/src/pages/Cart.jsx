@@ -1,23 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { clearCart, getCart, removeFromCart, updateCartItemQuantity } from '../utils/cart'
 import { useLang } from '../i18n.jsx' 
 import { formatLocalizedPrice, getLocalizedPriceNumber } from '../utils/currency'
+import EmptyStateCard from '../components/EmptyStateCard'
+import useStorageSync from '../hooks/useStorageSync'
+import { STORAGE_EVENTS } from '../constants/storageEvents'
 
 export default function Cart() {
   const [items, setItems] = useState([])
   const { t, lang } = useLang()
 
-  useEffect(() => {
-    const sync = () => setItems(getCart())
-    sync()
-    window.addEventListener('cart-updated', sync)
-    window.addEventListener('storage', sync)
-    return () => {
-      window.removeEventListener('cart-updated', sync)
-      window.removeEventListener('storage', sync)
-    }
-  }, [])
+  useStorageSync(() => setItems(getCart()), {
+    eventNames: [STORAGE_EVENTS.CART_UPDATED],
+    deps: []
+  })
 
   const totals = useMemo(() => {
     const subtotal = items.reduce((sum, item) => sum + getLocalizedPriceNumber(item, lang, 0) * (Number(item.quantity) || 0), 0)
@@ -43,11 +40,12 @@ export default function Cart() {
 
   if (!items.length) {
     return (
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-8 text-center">
-        <h1 className="text-3xl font-bold mb-4">{t('cart.empty_title')}</h1>
-        <p className="text-gray-600 mb-6">{t('cart.empty_desc')}</p>
-        <Link to="/" className="inline-block px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">{t('cart.continue')}</Link>
-      </div>
+      <EmptyStateCard
+        title={t('cart.empty_title')}
+        description={t('cart.empty_desc')}
+        actionLabel={t('cart.continue')}
+        actionTo="/"
+      />
     )
   }
 

@@ -1,3 +1,5 @@
+import { STORAGE_EVENTS } from '../constants/storageEvents'
+
 const WISHLIST_KEY = 'wishlistItems'
 
 function canUseStorage() {
@@ -20,7 +22,7 @@ function writeWishlist(items) {
   if (canUseStorage()) {
     try {
       window.localStorage.setItem(WISHLIST_KEY, JSON.stringify(items))
-      window.dispatchEvent(new Event('wishlist-updated'))
+      window.dispatchEvent(new Event(STORAGE_EVENTS.WISHLIST_UPDATED))
     } catch (e) {
       // ignore storage errors
     }

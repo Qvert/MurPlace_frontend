@@ -5,6 +5,8 @@ import { addReview, getAverageRating, getReviewsByProduct } from '../utils/revie
 import { isInWishlist, toggleWishlist } from '../utils/wishlist'
 import { useLang } from '../i18n.jsx' 
 import { formatLocalizedPrice, getLocalizedPriceValue } from '../utils/currency'
+import useStorageSync from '../hooks/useStorageSync'
+import { STORAGE_EVENTS } from '../constants/storageEvents'
 
 export default function ProductDetail(){
   const { id } = useParams()
@@ -36,29 +38,27 @@ export default function ProductDetail(){
     return () => { mounted = false }
   }, [id])
 
-  useEffect(() => {
-    const syncWishlist = () => {
+  useStorageSync(
+    () => {
       if (product?.id === undefined || product?.id === null) return
       setInWishlist(isInWishlist(product.id))
+    },
+    {
+      eventNames: [STORAGE_EVENTS.WISHLIST_UPDATED],
+      deps: [product?.id]
     }
+  )
 
-    const syncReviews = () => {
+  useStorageSync(
+    () => {
       if (product?.id === undefined || product?.id === null) return
       setReviews(getReviewsByProduct(product.id))
+    },
+    {
+      eventNames: [STORAGE_EVENTS.REVIEWS_UPDATED],
+      deps: [product?.id]
     }
-
-    window.addEventListener('wishlist-updated', syncWishlist)
-    window.addEventListener('reviews-updated', syncReviews)
-    window.addEventListener('storage', syncWishlist)
-    window.addEventListener('storage', syncReviews)
-
-    return () => {
-      window.removeEventListener('wishlist-updated', syncWishlist)
-      window.removeEventListener('reviews-updated', syncReviews)
-      window.removeEventListener('storage', syncWishlist)
-      window.removeEventListener('storage', syncReviews)
-    }
-  }, [product?.id])
+  )
 
   function renderStars(value) {
     const rating = Math.max(0, Math.min(5, Math.round(Number(value) || 0)))

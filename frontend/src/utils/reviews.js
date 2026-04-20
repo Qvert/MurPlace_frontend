@@ -1,3 +1,5 @@
+import { STORAGE_EVENTS } from '../constants/storageEvents'
+
 const REVIEWS_KEY = 'productReviews'
 
 function canUseStorage() {
@@ -20,7 +22,7 @@ function writeStore(store) {
   if (canUseStorage()) {
     try {
       window.localStorage.setItem(REVIEWS_KEY, JSON.stringify(store))
-      window.dispatchEvent(new Event('reviews-updated'))
+      window.dispatchEvent(new Event(STORAGE_EVENTS.REVIEWS_UPDATED))
     } catch (e) {
       // ignore storage errors
     }

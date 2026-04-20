@@ -1,3 +1,5 @@
+import { STORAGE_EVENTS } from '../constants/storageEvents'
+
 const CART_KEY = 'cartItems'
 
 function canUseStorage() {
@@ -21,7 +23,7 @@ function writeCart(items) {
   if (canUseStorage()) {
     try {
       window.localStorage.setItem(CART_KEY, JSON.stringify(items))
-      window.dispatchEvent(new Event('cart-updated'))
+      window.dispatchEvent(new Event(STORAGE_EVENTS.CART_UPDATED))
     } catch (e) {
       // ignore storage errors
     }

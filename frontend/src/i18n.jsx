@@ -73,6 +73,7 @@ const translations = {
     'confirm.error_generic': 'Confirmation failed. Please try again.',
 
     'hot_deals': 'Hot Deals This Week',
+    'deals.shop_now': 'Shop now',
     'shop.by_pet': 'Shop by Pet Type',
     'pet.Dogs': 'Dogs',
     'pet.Cats': 'Cats',
@@ -331,6 +332,7 @@ const translations = {
     'confirm.error_generic': 'Ошибка подтверждения. Попробуйте снова.',
 
     'hot_deals': 'Горячие предложения этой недели',
+    'deals.shop_now': 'Купить сейчас',
     'shop.by_pet': 'Магазины по видам питомцев',
     'pet.Dogs': 'Собаки',
     'pet.Cats': 'Кошки',

@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getCartCount } from '../utils/cart'
 import { getWishlistCount } from '../utils/wishlist'
 import { useLang } from '../i18n.jsx'
+import useStorageSync from '../hooks/useStorageSync'
+import { STORAGE_EVENTS } from '../constants/storageEvents'
 
 const categoryData = {
   Cats: ['Cat Toys', 'Cat Food', 'Cat Litter', 'Cat Beds', 'Cat Scratchers'],
@@ -45,27 +47,15 @@ export default function Header(){
     return () => window.removeEventListener('lang-saved', onSaved)
   }, [])
 
-  useEffect(() => {
-    const sync = () => setCartCount(getCartCount())
-    sync()
-    window.addEventListener('cart-updated', sync)
-    window.addEventListener('storage', sync)
-    return () => {
-      window.removeEventListener('cart-updated', sync)
-      window.removeEventListener('storage', sync)
-    }
-  }, [])
+  useStorageSync(() => setCartCount(getCartCount()), {
+    eventNames: [STORAGE_EVENTS.CART_UPDATED],
+    deps: []
+  })
 
-  useEffect(() => {
-    const sync = () => setWishlistCount(getWishlistCount())
-    sync()
-    window.addEventListener('wishlist-updated', sync)
-    window.addEventListener('storage', sync)
-    return () => {
-      window.removeEventListener('wishlist-updated', sync)
-      window.removeEventListener('storage', sync)
-    }
-  }, [])
+  useStorageSync(() => setWishlistCount(getWishlistCount()), {
+    eventNames: [STORAGE_EVENTS.WISHLIST_UPDATED],
+    deps: []
+  })
 
   useEffect(() => {
     const checkAuth = () => setIsAuthenticated(!!localStorage.getItem('token'))

@@ -53,6 +53,7 @@ copy the files from dist into the static folder of your backend. and update the 
 ## API Documentation (Used By Frontend)
 
 This section documents all API calls currently used by the frontend codebase.
+For the latest audited endpoint inventory with source mappings, see [frontend/API_USAGE.md](frontend/API_USAGE.md).
 
 ### Base URL and Transport
 

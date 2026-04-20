@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { addToCart } from '../utils/cart'
 import { getWishlist, removeFromWishlist, clearWishlist } from '../utils/wishlist'
 import { useLang } from '../i18n.jsx'
 import { formatLocalizedPrice } from '../utils/currency'
+import EmptyStateCard from '../components/EmptyStateCard'
+import useStorageSync from '../hooks/useStorageSync'
+import { STORAGE_EVENTS } from '../constants/storageEvents'
 
 export default function Wishlist() {
   const [items, setItems] = useState([])
   const { t, lang } = useLang()
 
-  useEffect(() => {
-    const sync = () => setItems(getWishlist())
-    sync()
-    window.addEventListener('wishlist-updated', sync)
-    window.addEventListener('storage', sync)
-    return () => {
-      window.removeEventListener('wishlist-updated', sync)
-      window.removeEventListener('storage', sync)
-    }
-  }, [])
+  useStorageSync(() => setItems(getWishlist()), {
+    eventNames: [STORAGE_EVENTS.WISHLIST_UPDATED],
+    deps: []
+  })
 
   const handleRemove = (id) => {
     const next = removeFromWishlist(id)
@@ -32,11 +29,12 @@ export default function Wishlist() {
 
   if (!items.length) {
     return (
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-8 text-center">
-        <h1 className="text-3xl font-bold mb-4">{t('wishlist.empty_title')}</h1>
-        <p className="text-gray-600 mb-6">{t('wishlist.empty_desc')}</p>
-        <Link to="/" className="inline-block px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">{t('wishlist.browse')}</Link>
-      </div>
+      <EmptyStateCard
+        title={t('wishlist.empty_title')}
+        description={t('wishlist.empty_desc')}
+        actionLabel={t('wishlist.browse')}
+        actionTo="/"
+      />
     )
   }
 
