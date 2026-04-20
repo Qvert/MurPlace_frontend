@@ -14,33 +14,43 @@ export async function postJSON(url, data) {
   return res.json()
 }
 
-export async function fetchProductsByCategory(category) {
-  const q = category ? `?category=${encodeURIComponent(category)}` : ''
-  const res = await fetch(`/api/products${q}`)
+export async function fetchProductsByCategory(category, page = 1) {
+  // Используем URLSearchParams для удобного формирования строки запроса
+  const params = new URLSearchParams();
+
+  if (category) {
+    params.append('category', category);
+  }
+  params.append('page', page); // Добавляем номер страницы
+
+  // Итоговый URL будет выглядеть как: /api/products/?category=cats&page=1
+  const res = await fetch(`/api/products/?${params.toString()}`)
+
   if (!res.ok) {
     const text = await res.text().catch(() => '')
     throw new Error('Failed fetching products: ' + res.status + ' ' + text)
   }
+
   const data = await res.json()
-  return Array.isArray(data) ? data : (data.products || [])
+
+  /**
+   * ВАЖНО:
+   * Если Django настроен на пагинацию, он вернет объект типа:
+   * { count: 100, next: "...", results: [...] }
+   * Нам нужно вернуть весь этот объект, чтобы в компоненте достать 'count'.
+   */
+  return data;
 }
 
 export async function fetchProductsBySearch(query, offset = 0, limit = 20) {
-  // Fallback to JSON only for search (no protobuf support yet)
-  const params = new URLSearchParams({
-    q: query,
-    offset: offset.toString(),
-    limit: limit.toString()
-  })
-  
-  const res = await fetch(`/api/products/search/?${params.toString()}`)
+  const url = `/api/products/search/?q=${encodeURIComponent(query)}&offset=${offset}&limit=${limit}`;
+
+  const res = await fetch(url);
+
   if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    throw new Error('Failed fetching search results: ' + res.status + ' ' + text)
+    const text = await res.text();
+    throw new Error('Search failed: ' + text);
   }
-  const data = await res.json()
-  return {
-    products: data.products || [],
-    total: data.total || 0
-  }
+
+  return await res.json();
 }

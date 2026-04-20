@@ -4,21 +4,25 @@ import { fetchProductsBySearch } from '../utils/api'
 import { addToCart } from '../utils/cart'
 import { useLang } from '../i18n.jsx' 
 
-const ITEMS_PER_PAGE = 20
+const ITEMS_PER_PAGE = 12
 
 export default function SearchResults() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const { t } = useLang()
+
+  // Параметры из URL
   const query = searchParams.get('q') || ''
   const offset = parseInt(searchParams.get('offset') || '0')
-  
+
+  // Состояния
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [total, setTotal] = useState(0)
   const [addedId, setAddedId] = useState(null)
-  const { t } = useLang()
 
+  // Эффект для загрузки данных
   useEffect(() => {
     let mounted = true
     setLoading(true)
@@ -26,20 +30,18 @@ export default function SearchResults() {
 
     async function load() {
       if (!query.trim()) {
-        if (mounted) {
-          setError('Please enter a search term')
-          setProducts([])
-          setTotal(0)
-          setLoading(false)
-        }
+        setLoading(false)
         return
       }
 
       try {
         const result = await fetchProductsBySearch(query, offset, ITEMS_PER_PAGE)
         if (mounted) {
-          setProducts(result.products)
-          setTotal(result.total)
+          // Убеждаемся, что берем данные из правильных полей объекта
+          setProducts(result.products || [])
+          setTotal(result.total || 0)
+          // Прокрутка вверх при смене страницы
+          window.scrollTo({ top: 0, behavior: 'smooth' })
         }
       } catch (err) {
         if (mounted) setError(err.message)
@@ -52,94 +54,132 @@ export default function SearchResults() {
     return () => { mounted = false }
   }, [query, offset])
 
+  // Расчет пагинации
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE)
   const currentPage = Math.floor(offset / ITEMS_PER_PAGE) + 1
 
-  const handleNextPage = () => {
-    const newOffset = offset + ITEMS_PER_PAGE
-    navigate(`/search?q=${encodeURIComponent(query)}&offset=${newOffset}`)
-  }
-
-  const handlePrevPage = () => {
-    const newOffset = Math.max(0, offset - ITEMS_PER_PAGE)
+  const handlePageChange = (newOffset) => {
     navigate(`/search?q=${encodeURIComponent(query)}&offset=${newOffset}`)
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-7xl mx-auto px-4">
+      {/* Шапка поиска */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold">{t('search.title')}</h1>
-          {query && <p className="text-gray-600 mt-2">{t('search.showing_for').replace('{q}', query)}</p>}
-        </div>
-        <div>
-          <button onClick={() => navigate(-1)} className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200">
-            {t('pagination.prev')}
-          </button>
-        </div>
-      </div> 
-
-      {loading && <div className="text-center py-8">{t('loading_products')}</div>}
-      {error && <div className="text-red-500 py-8">{error}</div>}
-
-      {!loading && !error && products.length === 0 && (
-        <div className="text-center py-8 text-gray-500">{t('search.no_results')}</div>
-      )}
-
-      {!loading && !error && products.length > 0 && (
-        <>
-          <div className="text-sm text-gray-600 mb-4">
-            {t('search.found').replace('{n}', total).replace('{plural}', total !== 1 ? 's' : '')}
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {products.map(p => (
-              <div
-                key={p.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden w-full max-w-[230px] mx-auto flex flex-col h-[260px] border border-gray-100"
-              >
-                <Link to={`/product/${p.id}`} className="no-underline text-current block flex-1 flex flex-col">
-                  <img src={p.image_url} alt={p.name} className="w-full h-[120px] object-cover" />
-                  <div className="p-3 flex-grow flex flex-col">
-                    <h3 className="font-semibold text-sm mb-1 line-clamp-2">{p.name}</h3>
-                    <p className="text-gray-600 text-xs mb-2 flex-grow line-clamp-2">{p.description}</p>
-                  </div>
-                </Link>
-                <div className="p-3 pt-0">
-                  <button
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded text-sm transition-colors"
-                    onClick={() => {
-                      addToCart({ id: p.id, name: p.name, image_url: p.image_url, price: p.price }, 1)
-                      setAddedId(p.id)
-                      setTimeout(() => setAddedId(null), 1200)
-                    }}
-                  >
-                    {addedId === p.id ? 'Added!' : 'Add to Cart'}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <button
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                ← Previous
-              </button>
-              <span className="text-gray-700">
-                Page {currentPage} of {totalPages}
+          <h1 className="text-3xl font-bold text-gray-900">{t('search.title')}</h1>
+          {query && (
+            <p className="text-gray-600 mt-2">
+              {t('search.showing_for').replace('{q}', query)}
+              <span className="ml-2 text-sm font-medium bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
+                {total} {t('items_found')}
               </span>
+            </p>
+          )}
+        </div>
+        <button
+          onClick={() => navigate(-1)}
+          className="w-fit px-5 py-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-all text-sm font-medium"
+        >
+          {t('back')}
+        </button>
+      </div>
+
+      {/* Состояния загрузки и ошибок */}
+      {loading && <div className="text-center py-20 text-indigo-600 font-medium">{t('loading_products')}</div>}
+      {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6">{t('error_prefix')} {error}</div>}
+
+      {/* Результаты поиска */}
+      {!loading && !error && (
+        <>
+          {products.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="text-5xl mb-4">🔍</div>
+              <p className="text-gray-500 text-xl">{t('search.no_results')}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+              {products.map(p => (
+                <div
+                  key={p.id}
+                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col h-[380px] border border-gray-100 group"
+                >
+                  <Link to={`/product/${p.id}`} className="flex-1 flex flex-col no-underline">
+                    <div className="relative h-44 overflow-hidden bg-gray-50">
+                      <img
+                        src={p.image_url || "https://via.placeholder.com/300x200?text=No+Photo"}
+                        alt={p.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-4 flex flex-col flex-1">
+                      <h3 className="font-bold text-gray-800 text-sm mb-2 line-clamp-2 h-10">{p.name}</h3>
+                      <p className="text-gray-500 text-xs line-clamp-2 h-8 mb-3">{p.description}</p>
+                      <div className="mt-auto">
+                        <span className="text-indigo-600 font-bold text-xl">${p.price}</span>
+                      </div>
+                    </div>
+                  </Link>
+                  <div className="p-4 pt-0">
+                    <button
+                      className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+                        addedId === p.id
+                          ? 'bg-green-500 text-white'
+                          : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                      }`}
+                      onClick={() => {
+                        addToCart({ ...p }, 1)
+                        setAddedId(p.id)
+                        setTimeout(() => setAddedId(null), 1500)
+                      }}
+                    >
+                      {addedId === p.id ? `✓ ${t('added')}` : t('add_to_cart')}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Пагинация */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mb-12">
               <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => handlePageChange(offset - ITEMS_PER_PAGE)}
+                disabled={currentPage === 1}
+                className="p-2 px-4 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
-                Next →
+                ←
+              </button>
+
+              <div className="flex gap-1">
+                {[...Array(totalPages)].map((_, i) => {
+                  const pageNum = i + 1;
+                  // Логика отображения только ближайших страниц, если их много
+                  if (totalPages > 5 && Math.abs(pageNum - currentPage) > 2) return null;
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(i * ITEMS_PER_PAGE)}
+                      className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
+                        currentPage === pageNum
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                })}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(offset + ITEMS_PER_PAGE)}
+                disabled={currentPage === totalPages}
+                className="p-2 px-4 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                →
               </button>
             </div>
           )}
