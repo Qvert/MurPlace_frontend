@@ -11,6 +11,7 @@ const translations = {
     'header.login': 'Login',
     'header.signup': 'Sign Up',
     'header.cart': 'Cart',
+    'header.wishlist': 'Wishlist',
     'header.select_language': 'Language',
 
     'account.title': 'My Account',
@@ -164,6 +165,26 @@ const translations = {
     'cart.checkout_placeholder': 'Checkout is a placeholder for now.',
     'cart.free': 'Free',
 
+    'wishlist.title': 'Wishlist',
+    'wishlist.subtitle': 'Save favorite items for later.',
+    'wishlist.add': 'Add to Wishlist',
+    'wishlist.remove': 'Remove from Wishlist',
+    'wishlist.clear': 'Clear wishlist',
+    'wishlist.empty_title': 'Your wishlist is empty',
+    'wishlist.empty_desc': 'Save products you love and come back anytime.',
+    'wishlist.browse': 'Browse products',
+
+    'reviews.title': 'Customer Reviews',
+    'reviews.count': 'reviews',
+    'reviews.name': 'Your name',
+    'reviews.name_placeholder': 'Pet lover',
+    'reviews.rating': 'Rating',
+    'reviews.comment': 'Comment',
+    'reviews.comment_placeholder': 'Share your experience with this product',
+    'reviews.submit': 'Submit review',
+    'reviews.empty': 'No reviews yet. Be the first to leave one.',
+    'reviews.error_comment_required': 'Please add a comment before submitting.',
+
     'footer.tagline': 'Your one-stop shop for all pet needs.',
     'footer.shop': 'Shop',
     'footer.services': 'Services',
@@ -210,6 +231,7 @@ const translations = {
     'header.login': 'Войти',
     'header.signup': 'Регистрация',
     'header.cart': 'Корзина',
+    'header.wishlist': 'Избранное',
     'header.select_language': 'Язык',
 
     'account.title': 'Мой аккаунт',
@@ -399,7 +421,27 @@ const translations = {
     'cart.total': 'Итого',
     'cart.proceed': 'Перейти к оформлению',
     'cart.checkout_placeholder': 'Оформление временно недоступно.',
-    'cart.free': 'Бесплатно'
+    'cart.free': 'Бесплатно',
+
+    'wishlist.title': 'Избранное',
+    'wishlist.subtitle': 'Сохраняйте товары, чтобы вернуться к ним позже.',
+    'wishlist.add': 'В избранное',
+    'wishlist.remove': 'Удалить из избранного',
+    'wishlist.clear': 'Очистить избранное',
+    'wishlist.empty_title': 'Ваш список избранного пуст',
+    'wishlist.empty_desc': 'Сохраните понравившиеся товары и вернитесь к ним позже.',
+    'wishlist.browse': 'Перейти к товарам',
+
+    'reviews.title': 'Отзывы покупателей',
+    'reviews.count': 'отзывов',
+    'reviews.name': 'Ваше имя',
+    'reviews.name_placeholder': 'Любитель питомцев',
+    'reviews.rating': 'Оценка',
+    'reviews.comment': 'Комментарий',
+    'reviews.comment_placeholder': 'Поделитесь опытом использования этого товара',
+    'reviews.submit': 'Оставить отзыв',
+    'reviews.empty': 'Пока нет отзывов. Оставьте первый.',
+    'reviews.error_comment_required': 'Пожалуйста, добавьте комментарий перед отправкой.'
   }
 }
 

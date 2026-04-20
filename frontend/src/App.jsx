@@ -8,6 +8,7 @@ import ProductDetail from './pages/ProductDetail'
 import Products from './pages/Products'
 import SearchResults from './pages/SearchResults'
 import Cart from './pages/Cart'
+import Wishlist from './pages/Wishlist'
 import Account from './pages/Account'
 import AllProducts from './pages/AllProducts'
 import Veterinary from './pages/Veterinary'
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/products/:category" element={<Products />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/account" element={<Account />} />
           <Route path="/all-products" element={<AllProducts />} />
           <Route path="/veterinary" element={<Veterinary />} />

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getCartCount } from '../utils/cart'
+import { getWishlistCount } from '../utils/wishlist'
 import { useLang } from '../i18n.jsx'
 
 const categoryData = {
@@ -17,6 +18,7 @@ const categoryData = {
 export default function Header(){
   const navigate = useNavigate()
   const [cartCount, setCartCount] = useState(0)
+  const [wishlistCount, setWishlistCount] = useState(0)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -50,6 +52,17 @@ export default function Header(){
     window.addEventListener('storage', sync)
     return () => {
       window.removeEventListener('cart-updated', sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
+
+  useEffect(() => {
+    const sync = () => setWishlistCount(getWishlistCount())
+    sync()
+    window.addEventListener('wishlist-updated', sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener('wishlist-updated', sync)
       window.removeEventListener('storage', sync)
     }
   }, [])
@@ -222,6 +235,13 @@ export default function Header(){
               </Link>
             </>
           )}
+          <Link to="/wishlist" className="relative flex items-center text-gray-700 hover:text-indigo-600">
+            <i data-feather="heart" className="mr-1"></i>
+            <span>{t('header.wishlist')}</span>
+            {wishlistCount > 0 && (
+              <span className="ml-2 text-xs bg-indigo-600 text-white rounded-full px-2 py-0.5">{wishlistCount}</span>
+            )}
+          </Link>
           <Link to="/cart" className="relative flex items-center text-gray-700 hover:text-indigo-600">
             <i data-feather="shopping-cart" className="mr-1"></i>
             <span>{t('header.cart')}</span>
