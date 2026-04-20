@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { postJSON } from '../utils/api'
+import { authService } from '../services/auth'
 import { useLang } from '../i18n.jsx'
 
 export default function Login() {
@@ -14,25 +14,15 @@ export default function Login() {
     e.preventDefault()
     setError(null)
     try {
-      const data = await postJSON('/api/login/', { username, password })
-      // Handle JWT tokens (access + refresh)
-      if (data.access) {
-        localStorage.setItem('token', data.access)
-        localStorage.setItem('refreshToken', data.refresh)
+      const data = await authService.login(username, password)
+      if (data.access || data.token || data.success) {
         window.dispatchEvent(new Event('storage'))
         navigate('/account')
-      } else if (data.token) {
-        // Fallback for old token system
-        localStorage.setItem('token', data.token)
-        window.dispatchEvent(new Event('storage'))
-        navigate('/account')
-      } else if (data.success) {
-        navigate('/')
       } else {
         setError(data.error || t('login.failed'))
       }
     } catch (err) {
-      setError(t('login.network_error'))
+      setError(err?.message || t('login.network_error'))
     }
   }
 

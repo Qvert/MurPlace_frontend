@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { addToCart } from '../utils/cart'
 import { useLang } from '../i18n.jsx' 
+import { formatLocalizedPrice, getLocalizedPriceValue } from '../utils/currency'
 
 export default function ProductDetail(){
   const { id } = useParams()
@@ -9,7 +10,7 @@ export default function ProductDetail(){
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [added, setAdded] = useState(false)
-  const { t } = useLang()
+  const { t, lang } = useLang()
 
   useEffect(() => {
     let mounted = true
@@ -39,16 +40,23 @@ export default function ProductDetail(){
         <div className="p-6 md:w-1/2 flex flex-col">
           <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
           <p className="text-gray-600 mb-4">{product.description}</p>
-          {product.price != null && (
+          {getLocalizedPriceValue(product, lang) != null && (
             <p className="text-indigo-600 font-bold text-3xl mb-4">
-              ${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}
+              {formatLocalizedPrice(product, lang)}
             </p>
           )}
           <div className="mt-auto">
             <button
               className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded mr-2"
               onClick={() => {
-                addToCart({ id: product.id, name: product.name, image_url: product.image_url, price: product.price }, 1)
+                addToCart({
+                  id: product.id,
+                  name: product.name,
+                  image_url: product.image_url,
+                  price: product.price,
+                  price_usd: product.price_usd ?? product.usd_price ?? product.priceUsd,
+                  price_rub: product.price_rub ?? product.rub_price ?? product.priceRub
+                }, 1)
                 setAdded(true)
                 setTimeout(() => setAdded(false), 1200)
               }}

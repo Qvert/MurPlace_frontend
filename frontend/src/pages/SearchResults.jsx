@@ -3,13 +3,14 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { fetchProductsBySearch } from '../utils/api'
 import { addToCart } from '../utils/cart'
 import { useLang } from '../i18n.jsx' 
+import { formatLocalizedPrice } from '../utils/currency'
 
 const ITEMS_PER_PAGE = 12
 
 export default function SearchResults() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { t } = useLang()
+  const { t, lang } = useLang()
 
   // Параметры из URL
   const query = searchParams.get('q') || ''
@@ -116,7 +117,7 @@ export default function SearchResults() {
                       <h3 className="font-bold text-gray-800 text-sm mb-2 line-clamp-2 h-10">{p.name}</h3>
                       <p className="text-gray-500 text-xs line-clamp-2 h-8 mb-3">{p.description}</p>
                       <div className="mt-auto">
-                        <span className="text-indigo-600 font-bold text-xl">${p.price}</span>
+                        <span className="text-indigo-600 font-bold text-xl">{formatLocalizedPrice(p, lang)}</span>
                       </div>
                     </div>
                   </Link>
@@ -128,7 +129,11 @@ export default function SearchResults() {
                           : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                       }`}
                       onClick={() => {
-                        addToCart({ ...p }, 1)
+                        addToCart({
+                          ...p,
+                          price_usd: p.price_usd ?? p.usd_price ?? p.priceUsd,
+                          price_rub: p.price_rub ?? p.rub_price ?? p.priceRub
+                        }, 1)
                         setAddedId(p.id)
                         setTimeout(() => setAddedId(null), 1500)
                       }}

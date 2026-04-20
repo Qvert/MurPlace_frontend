@@ -2,10 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { clearCart, getCart, removeFromCart, updateCartItemQuantity } from '../utils/cart'
 import { useLang } from '../i18n.jsx' 
+import { formatLocalizedPrice, getLocalizedPriceNumber } from '../utils/currency'
 
 export default function Cart() {
   const [items, setItems] = useState([])
-  const { t } = useLang()
+  const { t, lang } = useLang()
 
   useEffect(() => {
     const sync = () => setItems(getCart())
@@ -19,11 +20,11 @@ export default function Cart() {
   }, [])
 
   const totals = useMemo(() => {
-    const subtotal = items.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0)
+    const subtotal = items.reduce((sum, item) => sum + getLocalizedPriceNumber(item, lang, 0) * (Number(item.quantity) || 0), 0)
     const shipping = items.length ? 9.99 : 0
     const total = subtotal + shipping
     return { subtotal, shipping, total }
-  }, [items])
+  }, [items, lang])
 
   const handleQuantityChange = (id, quantity) => {
     const next = updateCartItemQuantity(id, quantity)
@@ -64,7 +65,7 @@ export default function Cart() {
               <img src={item.image_url} alt={item.name} className="w-24 h-24 object-cover rounded" />
               <div className="flex-1 mt-4 sm:mt-0">
                 <h3 className="text-lg font-semibold">{item.name}</h3>
-                <p className="text-indigo-600 font-bold">${Number(item.price || 0).toFixed(2)}</p>
+                <p className="text-indigo-600 font-bold">{formatLocalizedPrice(item, lang)}</p>
                 <div className="mt-3 flex items-center space-x-2">
                   <label className="text-sm text-gray-600" htmlFor={`qty-${item.id}`}>{t('cart.qty')}</label>
                   <input
@@ -93,15 +94,15 @@ export default function Cart() {
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span>{t('cart.subtotal')}</span>
-            <span>${totals.subtotal.toFixed(2)}</span>
+            <span>{formatPrice(totals.subtotal, lang)}</span>
           </div>
           <div className="flex justify-between">
             <span>{t('cart.shipping')}</span>
-            <span>{totals.shipping ? `$${totals.shipping.toFixed(2)}` : t('cart.free')}</span>
+            <span>{totals.shipping ? formatPrice(totals.shipping, lang) : t('cart.free')}</span>
           </div>
           <div className="flex justify-between font-semibold text-lg border-t pt-3 mt-3">
             <span>{t('cart.total')}</span>
-            <span>${totals.total.toFixed(2)}</span>
+            <span>{formatPrice(totals.total, lang)}</span>
           </div>
         </div>
 

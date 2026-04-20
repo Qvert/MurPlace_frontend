@@ -14,12 +14,15 @@ export async function postJSON(url, data) {
   return res.json()
 }
 
-export async function fetchProductsByCategory(category, page = 1) {
+export async function fetchProductsByCategory(category, page = 1, subcategory = '') {
   // Используем URLSearchParams для удобного формирования строки запроса
   const params = new URLSearchParams();
 
   if (category) {
     params.append('category', category);
+  }
+  if (subcategory) {
+    params.append('subcategory', subcategory);
   }
   params.append('page', page); // Добавляем номер страницы
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getCartCount } from '../utils/cart'
-import { debounce } from '../utils/debounce'
 import { useLang } from '../i18n.jsx'
 
 const categoryData = {
@@ -243,12 +242,12 @@ export default function Header(){
                 onMouseEnter={() => setOpenDropdown(category)}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
-                <a
-                  href={`/products/${category.toLowerCase()}`}
+                <Link
+                  to={`/products/${category.toLowerCase()}`}
                   className={`px-4 py-2 rounded-full border border-gray-300 text-gray-700 ${theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'} transition-colors block whitespace-nowrap`}
                 >
                   {t(`pet.${category}`) || category}
-                </a>
+                </Link>
                 
                 {/* Dropdown Menu */}
                 {openDropdown === category && (
@@ -256,15 +255,15 @@ export default function Header(){
                     theme === 'dark' ? 'bg-white border-indigo-200' : 'bg-white border-gray-300'
                   }`}>
                     {categoryData[category].map((subcategory) => (
-                      <a
+                      <Link
                         key={subcategory}
-                        href={`/products/${category.toLowerCase()}?subcategory=${encodeURIComponent(subcategory)}`}
+                        to={`/products/${category.toLowerCase()}?subcategory=${encodeURIComponent(subcategory)}`}
                         className={`block px-4 py-2 text-gray-700  transition-colors ${
                           theme === 'dark' ? 'hover:bg-indigo-700 hover:text-indigo-400' : 'hover:bg-indigo-100 hover:text-indigo-600'
                         }`}
                       >
                         {t(`subcategory.${category}.${subcategory}`) || subcategory}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 )}

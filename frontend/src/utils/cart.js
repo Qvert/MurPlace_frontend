@@ -49,6 +49,8 @@ export function addToCart(product, quantity = 1) {
       name: product.name,
       image_url: product.image_url,
       price: product.price,
+      price_usd: product.price_usd ?? product.usd_price ?? product.priceUsd,
+      price_rub: product.price_rub ?? product.rub_price ?? product.priceRub,
       quantity: quantity || 1
     })
   }

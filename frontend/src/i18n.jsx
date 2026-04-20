@@ -33,6 +33,12 @@ const translations = {
     'account.change_password': 'Change Password',
     'account.logout': 'Logout',
     'account.preferred_language': 'Preferred language',
+    'account.tg_error': 'Error generating Telegram link',
+    'account.connected': 'Connected',
+    'account.integrations': 'Integrations',
+    'account.connect_prompt': 'Connect to receive notifications.',
+    'account.connected_prompt': 'Your account is connected to our bot.',
+    'account.connect': 'Connect',
 
     'lang.en': 'English',
     'lang.ru': 'Русский',
@@ -61,6 +67,8 @@ const translations = {
     'confirm.no_code_found': 'No confirmation code found for this email. Please request a confirmation email.',
     'confirm.invalid_code': 'Invalid confirmation code',
     'confirm.success_login': 'Email confirmed. Please log in.',
+    'confirm.not_verified_yet': 'Email is not verified yet.',
+    'confirm.success_message': 'Email confirmed successfully.',
     'confirm.error_generic': 'Confirmation failed. Please try again.',
 
     'hot_deals': 'Hot Deals This Week',
@@ -135,6 +143,8 @@ const translations = {
     'search.enter_term': 'Please enter a search term',
     'search.no_results': 'No products found matching your search.',
     'search.found': 'Found {n} result{plural}',
+    'items_found': 'items found',
+    'back': 'Back',
     'pagination.prev': '← Previous',
     'pagination.next': 'Next →',
 
@@ -222,6 +232,12 @@ const translations = {
     'account.change_password': 'Сменить пароль',
     'account.logout': 'Выйти',
     'account.preferred_language': 'Предпочитаемый язык',
+    'account.tg_error': 'Ошибка при создании ссылки Telegram',
+    'account.connected': 'Подключено',
+    'account.integrations': 'Интеграции',
+    'account.connect_prompt': 'Подключите, чтобы получать уведомления.',
+    'account.connected_prompt': 'Ваш аккаунт подключен к нашему боту.',
+    'account.connect': 'Подключить',
 
     'lang.en': 'English',
     'lang.ru': 'Русский',
@@ -288,6 +304,8 @@ const translations = {
     'confirm.no_code_found': 'Код подтверждения для этого адреса не найден. Пожалуйста, запросите письмо с подтверждением.',
     'confirm.invalid_code': 'Неверный код подтверждения',
     'confirm.success_login': 'Почта подтверждена. Пожалуйста, войдите в систему.',
+    'confirm.not_verified_yet': 'Почта еще не подтверждена.',
+    'confirm.success_message': 'Почта успешно подтверждена.',
     'confirm.error_generic': 'Ошибка подтверждения. Попробуйте снова.',
 
     'hot_deals': 'Горячие предложения этой недели',
@@ -362,6 +380,8 @@ const translations = {
     'search.enter_term': 'Пожалуйста, введите поисковый запрос',
     'search.no_results': 'По вашему запросу не найдено товаров.',
     'search.found': 'Найдено {n} результатов',
+    'items_found': 'товаров найдено',
+    'back': 'Назад',
     'pagination.prev': '← Назад',
     'pagination.next': 'Вперёд →',
 

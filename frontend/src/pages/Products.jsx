@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import React, { useEffect, useRef, useState } from 'react'
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { fetchProductsByCategory } from '../utils/api'
 import { addToCart } from '../utils/cart'
 import { useLang } from '../i18n.jsx'
+import { formatLocalizedPrice } from '../utils/currency'
 
 export default function Products() {
   const { category } = useParams()
+  const [searchParams] = useSearchParams()
+  const subcategory = searchParams.get('subcategory') || ''
   const navigate = useNavigate()
-  const { t } = useLang()
+  const { t, lang } = useLang()
+  const previousCategoryRef = useRef(category)
 
   // --- Состояния для пагинации ---
   const [products, setProducts] = useState([])
@@ -20,22 +24,33 @@ export default function Products() {
   const pageSize = 12; // Должно совпадать с PAGE_SIZE в Django
 
   useEffect(() => {
+    // Avoid fetching an outdated page when category changes.
+    if (previousCategoryRef.current !== category) {
+      previousCategoryRef.current = category
+      setCurrentPage(1)
+      return
+    }
+
     let mounted = true
     setLoading(true)
     setError(null)
 
     async function load() {
       try {
-        // Передаем категорию И текущую страницу
-        const data = await fetchProductsByCategory(category, currentPage)
+        // Передаем категорию, страницу и подкатегорию (если есть).
+        const data = await fetchProductsByCategory(category, currentPage, subcategory)
 
         if (mounted) {
-          // Если Django возвращает стандартный PageNumberPagination,
-          // данные будут в data.results, а общее кол-во в data.count
-          setProducts(data.results || data)
+          const nextProducts = Array.isArray(data?.results)
+            ? data.results
+            : (Array.isArray(data) ? data : [])
+          setProducts(nextProducts)
 
-          if (data.count) {
-            setTotalPages(Math.ceil(data.count / pageSize))
+          const count = Number(data?.count)
+          if (Number.isFinite(count) && count >= 0) {
+            setTotalPages(Math.max(1, Math.ceil(count / pageSize)))
+          } else {
+            setTotalPages(1)
           }
         }
       } catch (err) {
@@ -47,18 +62,13 @@ export default function Products() {
 
     load()
     return () => { mounted = false }
-  }, [category, currentPage]) // Перезагружаем, если изменилась категория ИЛИ страница
-
-  // Сброс на 1 страницу при смене категории
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [category])
+  }, [category, currentPage, subcategory]) // Перезагружаем при смене категории, страницы или подкатегории
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">
-            {category ? category.charAt(0).toUpperCase() + category.slice(1) : t('search.title')}
+          {subcategory || (category ? category.charAt(0).toUpperCase() + category.slice(1) : t('search.title'))}
         </h1>
         <button onClick={() => navigate(-1)} className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200 transition-colors">
             {t('back')}
@@ -84,7 +94,7 @@ export default function Products() {
                 <p className="text-gray-500 text-xs mb-2 line-clamp-2 h-8">{p.description}</p>
                 <div className="mt-auto">
                   <p className="text-indigo-600 font-bold text-lg">
-                    ${typeof p.price === 'number' ? p.price.toFixed(2) : p.price}
+                    {formatLocalizedPrice(p, lang)}
                   </p>
                 </div>
               </div>
@@ -95,7 +105,14 @@ export default function Products() {
                   addedId === p.id ? 'bg-green-500 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                 }`}
                 onClick={() => {
-                  addToCart({ id: p.id, name: p.name, image_url: p.image_url, price: p.price }, 1)
+                  addToCart({
+                    id: p.id,
+                    name: p.name,
+                    image_url: p.image_url,
+                    price: p.price,
+                    price_usd: p.price_usd ?? p.usd_price ?? p.priceUsd,
+                    price_rub: p.price_rub ?? p.rub_price ?? p.priceRub
+                  }, 1)
                   setAddedId(p.id)
                   setTimeout(() => setAddedId(null), 1200)
                 }}

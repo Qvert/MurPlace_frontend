@@ -25,7 +25,7 @@ export const authService = {
         throw error.response?.data || error
       }
     },
-  async login(email, password) {
+  async login(loginId, password) {
     if (USE_MOCK) {
       // In mock mode accept any password and return JWT-like tokens
       const accessToken = `mock-access-${Date.now()}`
@@ -37,7 +37,11 @@ export const authService = {
     }
 
     try {
-      const response = await api.post('/api/login/', { email, password })
+      const response = await api.post('/api/login/', {
+        email: loginId,
+        username: loginId,
+        password
+      })
 
       // Handle JWT tokens (access + refresh)
       if (response.data.access) {

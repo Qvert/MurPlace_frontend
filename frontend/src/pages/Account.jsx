@@ -159,7 +159,7 @@ export default function Account() {
 
           {/* --- НОВАЯ СЕКЦИЯ: ИНТЕГРАЦИИ (TELEGRAM) --- */}
           <section className="mb-8">
-             <h2 className="text-xl font-semibold mb-4 text-gray-800">{t('Integrations') || 'Integrations'}</h2>
+             <h2 className="text-xl font-semibold mb-4 text-gray-800">{t('account.integrations') || 'Integrations'}</h2>
              <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-center justify-between">
                 <div>
                   <div className="font-medium text-blue-900 flex items-center">
@@ -167,8 +167,8 @@ export default function Account() {
                   </div>
                   <div className="text-sm text-blue-700 mt-1">
                     {user.chat_id
-                      ? (t('Your account is connected to our bot.') || 'Your account is connected to our bot.')
-                      : (t('Connect to receive notifications.') || 'Connect to receive notifications.')}
+                      ? (t('account.connected_prompt') || 'Your account is connected to our bot.')
+                      : (t('account.connect_prompt') || 'Connect to receive notifications.')}
                   </div>
                 </div>
 
@@ -182,7 +182,7 @@ export default function Account() {
                     disabled={tgLoading}
                     className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-md transition-colors shadow-sm flex items-center"
                   >
-                    {tgLoading ? 'Loading...' : (t('Connect') || 'Connect')}
+                    {tgLoading ? 'Loading...' : (t('account.connect') || 'Connect')}
                   </button>
                 )}
              </div>
