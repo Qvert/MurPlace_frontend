@@ -60,7 +60,12 @@ Audited files include:
   - Plain array: [...]
   - Home flow also accepts { products: [...] }.
 
-3. GET /api/products/search/
+  3. GET /api/products/popular/
+  - Source: src/utils/api.js (used by src/pages/Home.jsx)
+  - Purpose: dedicated endpoint for Home popular items.
+  - Fallback behavior: frontend falls back to GET /api/products/ if this route is unavailable.
+
+  4. GET /api/products/search/
 - Source: src/utils/api.js (used by src/pages/SearchResults.jsx)
 - Purpose: product search.
 - Query params used in code:
@@ -69,14 +74,14 @@ Audited files include:
   - limit
 - Response expected in SearchResults page: { products: [...], total: number }.
 
-4. GET /api/products/:id/
+5. GET /api/products/:id/
 - Source: src/pages/ProductDetail.jsx
 - Purpose: product detail page.
 - Response shapes supported:
   - { product: {...} }
   - {...} (direct product object)
 
-5. GET /api/dealscarousel
+6. GET /api/dealscarousel
 - Source: src/pages/Home.jsx
 - Purpose: hero/deals carousel data.
 - Response shapes supported:

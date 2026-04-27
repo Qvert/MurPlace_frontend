@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../i18n.jsx' 
 import { mockDealsCarousel, mockPopularProducts } from '../utils/mockProducts.js' 
+import { fetchPopularItems } from '../utils/api'
 import ProductCard from '../components/ProductCard'
 import DealsCarousel from '../components/DealsCarousel'
 import PetCategoryGrid from '../components/PetCategoryGrid'
@@ -47,25 +48,15 @@ export default function Home() {
 
       // fallback to JSON
       try{
-        const res = await fetch('/api/products/')
-        if (!res.ok) {
-          // Non-OK responses -> use mock data silently (avoid surfacing 'Failed to fetch JSON' to the UI)
-          if (mounted) {
+        const finalProducts = await fetchPopularItems()
+        if (mounted) {
+          if (finalProducts.length === 0) {
+            // Use a small mocked list when the API returns nothing
             setProducts(mockPopularProducts)
             setIsMock(true)
-          }
-        } else {
-          const data = await res.json()
-          const finalProducts = data.products || []
-          if (mounted) {
-            if (finalProducts.length === 0) {
-              // Use a small mocked list when the API returns nothing
-              setProducts(mockPopularProducts)
-              setIsMock(true)
-            } else {
-              setProducts(finalProducts)
-              setIsMock(false)
-            }
+          } else {
+            setProducts(finalProducts)
+            setIsMock(false)
           }
         }
       } catch (err){

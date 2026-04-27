@@ -124,6 +124,10 @@ Source: [frontend/src/utils/api.js](frontend/src/utils/api.js), [frontend/src/pa
 - GET /api/products/
 	- Home page JSON fallback and popular products source.
 
+- GET /api/products/popular/
+	- Dedicated Home page popular products endpoint.
+	- Frontend falls back to /api/products/ if unavailable.
+
 - GET /api/products.pb
 	- Home page preferred protobuf source when available.
 
