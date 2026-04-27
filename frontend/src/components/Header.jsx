@@ -5,6 +5,7 @@ import { getWishlistCount } from '../utils/wishlist'
 import { useLang } from '../i18n.jsx'
 import useStorageSync from '../hooks/useStorageSync'
 import { STORAGE_EVENTS } from '../constants/storageEvents'
+import { useCurrency } from '../context/CurrencyContext'
 
 const categoryData = {
   Cats: ['Cat Toys', 'Cat Food', 'Cat Litter', 'Cat Beds', 'Cat Scratchers'],
@@ -17,7 +18,7 @@ const categoryData = {
   Groomer: ['Shampoos', 'Brushes', 'Clippers', 'Nail Care', 'Drying Tools']
 }
 
-export default function Header(){
+export default function Header() {
   const navigate = useNavigate()
   const [cartCount, setCartCount] = useState(0)
   const [wishlistCount, setWishlistCount] = useState(0)
@@ -32,9 +33,12 @@ export default function Header(){
 
   const searchInputRef = useRef(null)
   const languageMenuRef = useRef(null)
+  const currencyMenuRef = useRef(null)
   const { lang, setLang, t } = useLang()
+  const { currency, setCurrency } = useCurrency()
   const [langSavedMsg, setLangSavedMsg] = useState('')
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
+  const [isCurrencyMenuOpen, setIsCurrencyMenuOpen] = useState(false)
 
   useEffect(() => {
     const onSaved = (e) => {
@@ -70,51 +74,62 @@ export default function Header(){
   }, [theme])
 
   useEffect(() => {
-    const closeOnOutsideClick = (e) => {
+    const closeLanguageMenu = (e) => {
       if (languageMenuRef.current && !languageMenuRef.current.contains(e.target)) {
         setIsLanguageMenuOpen(false)
       }
     }
 
-    window.addEventListener('mousedown', closeOnOutsideClick)
-    window.addEventListener('touchstart', closeOnOutsideClick)
+    window.addEventListener('mousedown', closeLanguageMenu)
+    window.addEventListener('touchstart', closeLanguageMenu)
     return () => {
-      window.removeEventListener('mousedown', closeOnOutsideClick)
-      window.removeEventListener('touchstart', closeOnOutsideClick)
+      window.removeEventListener('mousedown', closeLanguageMenu)
+      window.removeEventListener('touchstart', closeLanguageMenu)
+    }
+  }, [])
+
+  useEffect(() => {
+    const closeCurrencyMenu = (e) => {
+      if (currencyMenuRef.current && !currencyMenuRef.current.contains(e.target)) {
+        setIsCurrencyMenuOpen(false)
+      }
+    }
+
+    window.addEventListener('mousedown', closeCurrencyMenu)
+    window.addEventListener('touchstart', closeCurrencyMenu)
+    return () => {
+      window.removeEventListener('mousedown', closeCurrencyMenu)
+      window.removeEventListener('touchstart', closeCurrencyMenu)
     }
   }, [])
 
   const handleSearchSubmit = () => {
     const trimmedQuery = searchQuery.trim()
-    if (!trimmedQuery) {
-      return
-    }
+    if (!trimmedQuery) return
     navigate(`/search?q=${encodeURIComponent(trimmedQuery)}&offset=0`)
   }
 
-  const handleSearchInputChange = (e) => {
-    setSearchQuery(e.target.value)
-  }
+  const handleSearchInputChange = (e) => setSearchQuery(e.target.value)
 
   const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearchSubmit()
-    }
+    if (e.key === 'Enter') handleSearchSubmit()
   }
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark')
-
-
 
   return (
     <header className="site-header bg-white shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <img src={theme === 'dark' ? '/static/logo_dark.png' : '/static/logo.png'} alt={`${t('app.title')} Logo`} className="h-12 w-12 mr-2" />
-          <h1  className="site-title text-2xl font-bold text-indigo-600">{t('app.title')}</h1>
+          <img
+            src={theme === 'dark' ? '/static/logo_dark.png' : '/static/logo.png'}
+            alt={`${t('app.title')} Logo`}
+            className="h-12 w-12 mr-2"
+          />
+          <h1 className="site-title text-2xl font-bold text-indigo-600">{t('app.title')}</h1>
         </Link>
 
-          <div className="flex-1 mx-8">
+        <div className="flex-1 mx-8">
           <div className="relative">
             <input
               ref={searchInputRef}
@@ -152,9 +167,7 @@ export default function Header(){
                 type="button"
                 onClick={() => setIsLanguageMenuOpen((prev) => !prev)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Escape') {
-                    setIsLanguageMenuOpen(false)
-                  }
+                  if (e.key === 'Escape') setIsLanguageMenuOpen(false)
                 }}
                 className={`flex items-center px-3 py-2 border border-gray-300 rounded-lg text-gray-700 ${
                   theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'
@@ -184,7 +197,7 @@ export default function Header(){
                           setLang(languageCode)
                           setIsLanguageMenuOpen(false)
                         }}
-                        style={{ 'border-radius': '10px' }}
+                        style={{ borderRadius: '10px' }}
                         className={`w-full text-left px-3 py-2 ${
                           theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'
                         } ${lang === languageCode ? 'text-indigo-600 font-medium' : 'text-gray-700'}`}
@@ -197,9 +210,55 @@ export default function Header(){
               )}
             </div>
 
-            {langSavedMsg && (
-              <div className="ml-3 text-sm text-green-600 font-medium">{langSavedMsg}</div>
-            )}
+            {langSavedMsg && <div className="ml-3 text-sm text-green-600 font-medium">{langSavedMsg}</div>}
+
+            <div ref={currencyMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setIsCurrencyMenuOpen((prev) => !prev)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setIsCurrencyMenuOpen(false)
+                }}
+                className={`flex items-center px-3 py-2 border border-gray-300 rounded-lg text-gray-700 ${
+                  theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'
+                }`}
+                aria-label={t('header.select_currency')}
+                aria-haspopup="listbox"
+                aria-expanded={isCurrencyMenuOpen}
+              >
+                <span>{currency.toUpperCase()}</span>
+                <span className="ml-2 text-xs" aria-hidden="true">▾</span>
+              </button>
+
+              {isCurrencyMenuOpen && (
+                <ul
+                  role="listbox"
+                  className={`absolute right-0 mt-1 w-20 border rounded-lg shadow-lg z-[100] py-1 ${
+                    theme === 'dark' ? 'bg-white border-indigo-200' : 'bg-white border-gray-300'
+                  }`}
+                >
+                  {['usd', 'rub'].map((currencyCode) => (
+                    <li key={currencyCode}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={currency === currencyCode}
+                        onClick={() => {
+                          setCurrency(currencyCode)
+                          setIsCurrencyMenuOpen(false)
+                        }}
+                        style={{ borderRadius: '10px' }}
+                        className={`w-full text-left px-3 py-2 ${
+                          theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'
+                        } ${currency === currencyCode ? 'text-indigo-600 font-medium' : 'text-gray-700'}`}
+                      >
+                        {currencyCode.toUpperCase()}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           {isAuthenticated ? (
@@ -225,6 +284,7 @@ export default function Header(){
               </Link>
             </>
           )}
+
           <Link to="/wishlist" className="relative flex items-center text-gray-700 hover:text-indigo-600">
             <i data-feather="heart" className="mr-1"></i>
             <span>{t('header.wishlist')}</span>
@@ -254,21 +314,24 @@ export default function Header(){
               >
                 <Link
                   to={`/products/${category.toLowerCase()}`}
-                  className={`px-4 py-2 rounded-full border border-gray-300 text-gray-700 ${theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'} transition-colors block whitespace-nowrap`}
+                  className={`px-4 py-2 rounded-full border border-gray-300 text-gray-700 ${
+                    theme === 'dark' ? 'hover:bg-indigo-700' : 'hover:bg-gray-100'
+                  } transition-colors block whitespace-nowrap`}
                 >
                   {t(`pet.${category}`) || category}
                 </Link>
-                
-                {/* Dropdown Menu */}
+
                 {openDropdown === category && (
-                  <div className={`absolute left-0 top-full mt-0 w-48 border rounded-lg shadow-2xl z-50 py-2 ${
-                    theme === 'dark' ? 'bg-white border-indigo-200' : 'bg-white border-gray-300'
-                  }`}>
+                  <div
+                    className={`absolute left-0 top-full mt-0 w-48 border rounded-lg shadow-2xl z-50 py-2 ${
+                      theme === 'dark' ? 'bg-white border-indigo-200' : 'bg-white border-gray-300'
+                    }`}
+                  >
                     {categoryData[category].map((subcategory) => (
                       <Link
                         key={subcategory}
                         to={`/products/${category.toLowerCase()}?subcategory=${encodeURIComponent(subcategory)}`}
-                        className={`block px-4 py-2 text-gray-700  transition-colors ${
+                        className={`block px-4 py-2 text-gray-700 transition-colors ${
                           theme === 'dark' ? 'hover:bg-indigo-700 hover:text-indigo-400' : 'hover:bg-indigo-100 hover:text-indigo-600'
                         }`}
                       >

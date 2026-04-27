@@ -4,9 +4,10 @@ import { addToCart } from '../utils/cart'
 import { addReview, getAverageRating, getReviewsByProduct } from '../utils/reviews'
 import { isInWishlist, toggleWishlist } from '../utils/wishlist'
 import { useLang } from '../i18n.jsx' 
-import { formatLocalizedPrice, getLocalizedPriceValue } from '../utils/currency'
+import { formatLocalizedPrice, getConvertedPriceNumber } from '../utils/currency'
 import useStorageSync from '../hooks/useStorageSync'
 import { STORAGE_EVENTS } from '../constants/storageEvents'
+import { useCurrency } from '../context/CurrencyContext'
 
 export default function ProductDetail(){
   const { id } = useParams()
@@ -19,6 +20,7 @@ export default function ProductDetail(){
   const [formError, setFormError] = useState(null)
   const [reviewForm, setReviewForm] = useState({ author: '', rating: 5, comment: '' })
   const { t, lang } = useLang()
+  const { currency, exchangeRate } = useCurrency()
 
   useEffect(() => {
     let mounted = true
@@ -99,9 +101,9 @@ export default function ProductDetail(){
               <span className="ml-2 text-gray-600">{reviews.length} {t('reviews.count')}</span>
             </p>
             <p className="text-gray-600 mb-4">{product.description}</p>
-            {getLocalizedPriceValue(product, lang) != null && (
+            {getConvertedPriceNumber(product, currency, exchangeRate, null) != null && (
               <p className="text-indigo-600 font-bold text-3xl mb-4">
-                {formatLocalizedPrice(product, lang)}
+                {formatLocalizedPrice(product, lang, currency, exchangeRate)}
               </p>
             )}
             <div className="mt-auto flex flex-wrap items-center gap-2">

@@ -97,22 +97,34 @@ Audited files include:
 - Used by: src/pages/Login.jsx
 - Request body sent: { email, username, password }
   - email and username both receive the same login input value.
+  - Login form now labels this field as email address.
 - Response shapes supported:
   - JWT style: { access, refresh }
   - Legacy style: { token }
 
-7. POST /api/logout/
+7. POST password reset request endpoint(s)
+- Source: src/services/auth.js
+- Used by: src/pages/ResetPassword.jsx
+- Request body sent: { email }
+- Frontend will try these common endpoint paths until one responds:
+  - /api/password/reset/
+  - /api/password-reset/
+  - /api/auth/password/reset/
+  - /api/password-reset-request/
+- Purpose: send a password reset email or link.
+
+8. POST /api/logout/
 - Source: src/services/auth.js
 - Used by: src/pages/Account.jsx
 - Purpose: server logout (frontend clears tokens regardless of response outcome).
 
-8. POST /api/token/refresh/
+9. POST /api/token/refresh/
 - Sources: src/services/auth.js and src/services/api.js interceptor
 - Request body: { refresh }
 - Response expected: { access }
 - Behavior: if refresh fails, frontend clears tokens and redirects to /login.
 
-9. POST /api/signup/
+10. POST /api/signup/
 - Source: src/services/auth.js
 - Used by: src/pages/Signup.jsx
 - Request body: signup form payload (username, first_name, email, password).
@@ -120,31 +132,31 @@ Audited files include:
   - If access/token present, user is treated as authenticated.
   - Otherwise UI proceeds with email verification flow.
 
-10. GET /api/profile/
+11. GET /api/profile/
 - Source: src/services/auth.js
 - Used by: src/pages/Account.jsx
 - Purpose: fetch current user profile.
 
-11. PATCH /api/profile/
+12. PATCH /api/profile/
 - Source: src/services/auth.js
 - Purpose: update profile fields.
 - Notes:
   - Not directly called by Account page in current UI path.
   - Explicitly watched in scripts/smoke-language.js to validate language persistence flow.
 
-12. GET /api/email/verification-status/
+13. GET /api/email/verification-status/
 - Source: src/services/auth.js
 - Used by: src/pages/ConfirmEmail.jsx
 - Purpose: check whether user email is verified.
 - Response expected: includes verified boolean; may also include auth token fields.
 
-13. POST /api/email/request-verification/
+14. POST /api/email/request-verification/
 - Source: src/services/auth.js
 - Used by: src/pages/Signup.jsx and src/pages/ConfirmEmail.jsx
 - Request body: { email }
 - Purpose: send/resend confirmation email.
 
-14. GET /api/telegram/generate-link/
+15. GET /api/telegram/generate-link/
 - Source: src/services/auth.js
 - Used by: src/pages/Account.jsx
 - Response expected: { link }
@@ -152,7 +164,7 @@ Audited files include:
 
 ### Example/Demo Endpoint
 
-15. GET /items/
+16. GET /items/
 - Source: src/components/ExampleComponent.jsx
 - Purpose: sample/demo data loading component.
 - Client: axios instance with baseURL VITE_API_URL.

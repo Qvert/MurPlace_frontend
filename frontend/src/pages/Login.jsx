@@ -1,20 +1,22 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { authService } from '../services/auth'
 import { useLang } from '../i18n.jsx'
 
 export default function Login() {
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
+  const location = useLocation()
   const navigate = useNavigate()
   const { t } = useLang()
+  const infoMessage = location.state?.message
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError(null)
     try {
-      const data = await authService.login(username, password)
+      const data = await authService.login(email, password)
       if (data.access || data.token || data.success) {
         window.dispatchEvent(new Event('storage'))
         navigate('/account')
@@ -33,17 +35,23 @@ export default function Login() {
           <h2 className="text-2xl font-bold text-white">{t('login.title')}</h2>
         </div>
         <div className="p-6">
+          {infoMessage && <div className="mb-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">{infoMessage}</div>}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-medium mb-2">{t('login.username')}</label>
-              <input className="w-full py-3 px-4 border rounded-lg" value={username} onChange={e => setUsername(e.target.value)} required />
+              <label className="block text-gray-700 text-sm font-medium mb-2">{t('login.email')}</label>
+              <input type="email" autoComplete="email" className="w-full py-3 px-4 border rounded-lg" value={email} onChange={e => setEmail(e.target.value)} required />
             </div>
             <div className="mb-6">
               <label className="block text-gray-700 text-sm font-medium mb-2">{t('login.password')}</label>
-              <input type="password" className="w-full py-3 px-4 border rounded-lg" value={password} onChange={e => setPassword(e.target.value)} required />
+              <input type="password" autoComplete="current-password" className="w-full py-3 px-4 border rounded-lg" value={password} onChange={e => setPassword(e.target.value)} required />
             </div>
             {error && <div className="text-red-500 mb-4">{error}</div>}
             <button type="submit" className="w-full bg-indigo-600 text-white py-3 rounded-lg">{t('login.sign_in')}</button>
+            <div className="mt-4 text-center">
+              <Link to="/reset-password" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                {t('login.forgot_password')}
+              </Link>
+            </div>
           </form>
         </div>
       </div>

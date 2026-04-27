@@ -46,7 +46,7 @@ export default function WishlistToggleButton({ product, className = '', showLabe
         e.stopPropagation()
         if (!normalizedProduct || productId === undefined || productId === null) return
         toggleWishlist(normalizedProduct)
-        setInWishlist((prev) => !prev)
+        setInWishlist(isInWishlist(productId))
       }}
     >
       <span aria-hidden="true">{inWishlist ? '♥' : '♡'}</span>

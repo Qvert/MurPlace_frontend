@@ -76,9 +76,14 @@ Source: [frontend/src/services/auth.js](frontend/src/services/auth.js), [fronten
 - POST /api/login/
 	- Used in both authService login and login page helper.
 	- Accepts credentials.
+	- Login form uses email address as the visible field label.
 	- Frontend supports either:
 		- JWT style: access + refresh
 		- Legacy style: token
+
+- POST /api/password/reset/ or related reset endpoints
+	- Used by the password reset page.
+	- Frontend sends { email } and tries common reset endpoint paths.
 
 - POST /api/logout/
 	- Logs out on backend (best effort).

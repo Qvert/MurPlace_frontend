@@ -3,6 +3,12 @@ import api from './api';
 // Enable front-end mock auth for local testing using Vite env var:
 // VITE_USE_MOCK_AUTH=true
 const USE_MOCK = import.meta.env.VITE_USE_MOCK_AUTH === 'true'
+const PASSWORD_RESET_ENDPOINTS = [
+  '/api/password/reset/',
+  '/api/password-reset/',
+  '/api/auth/password/reset/',
+  '/api/password-reset-request/'
+]
 
 const _getMockStore = () => JSON.parse(localStorage.getItem('mock_confirmation_codes') || '{}')
 const _saveMockStore = (s) => localStorage.setItem('mock_confirmation_codes', JSON.stringify(s))
@@ -58,6 +64,31 @@ export const authService = {
     } catch (error) {
       throw error.response?.data || error
     }
+  },
+
+  async requestPasswordReset(email) {
+    if (USE_MOCK) {
+      const code = _setMockCode(`reset:${email}`)
+      return { message: 'Password reset email sent', mockCode: code }
+    }
+
+    let lastError = null
+
+    for (const endpoint of PASSWORD_RESET_ENDPOINTS) {
+      try {
+        const response = await api.post(endpoint, { email })
+        return response.data
+      } catch (error) {
+        lastError = error.response?.data || error
+
+        const status = error.response?.status
+        if (status !== 404 && status !== 405) {
+          throw lastError
+        }
+      }
+    }
+
+    throw lastError || new Error('Password reset request failed')
   },
 
   async logout() {

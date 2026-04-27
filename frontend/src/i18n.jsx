@@ -13,6 +13,7 @@ const translations = {
     'header.cart': 'Cart',
     'header.wishlist': 'Wishlist',
     'header.select_language': 'Language',
+    'header.select_currency': 'Currency',
 
     'account.title': 'My Account',
     'account.subtitle': 'Manage your profile and preferences',
@@ -45,11 +46,22 @@ const translations = {
     'lang.ru': 'Русский',
 
     'login.title': 'Login to Your Account',
-    'login.username': 'Username',
+    'login.email': 'Email address',
     'login.password': 'Password',
     'login.sign_in': 'Sign In',
+    'login.forgot_password': 'Forgot your password?',
     'login.failed': 'Login failed',
     'login.network_error': 'Network error',
+
+    'reset_password.title': 'Reset Your Password',
+    'reset_password.instructions': 'Enter your email address and we will send password reset instructions.',
+    'reset_password.email_label': 'Email address',
+    'reset_password.submit': 'Send Reset Link',
+    'reset_password.processing': 'Sending…',
+    'reset_password.success': 'If an account exists for this email, a reset link has been sent.',
+    'reset_password.error': 'Unable to request a password reset',
+    'reset_password.back_to_login': 'Back to Login',
+    'reset_password.dev_code_display': 'Dev reset code: {code}',
 
     'signup.title': 'Create Your Account',
     'signup.button': 'Create Account',
@@ -234,6 +246,7 @@ const translations = {
     'header.cart': 'Корзина',
     'header.wishlist': 'Избранное',
     'header.select_language': 'Язык',
+    'header.select_currency': 'Валюта',
 
     'account.title': 'Мой аккаунт',
     'account.subtitle': 'Управляйте профилем и настройками',
@@ -266,11 +279,22 @@ const translations = {
     'lang.ru': 'Русский',
 
     'login.title': 'Войдите в аккаунт',
-    'login.username': 'Имя пользователя',
+    'login.email': 'Электронная почта',
     'login.password': 'Пароль',
     'login.sign_in': 'Войти',
+    'login.forgot_password': 'Забыли пароль?',
     'login.failed': 'Ошибка входа',
     'login.network_error': 'Сетевая ошибка',
+
+    'reset_password.title': 'Сброс пароля',
+    'reset_password.instructions': 'Введите адрес электронной почты, и мы отправим инструкции для сброса пароля.',
+    'reset_password.email_label': 'Электронная почта',
+    'reset_password.submit': 'Отправить ссылку',
+    'reset_password.processing': 'Отправка…',
+    'reset_password.success': 'Если аккаунт существует, ссылка для сброса пароля отправлена.',
+    'reset_password.error': 'Не удалось запросить сброс пароля',
+    'reset_password.back_to_login': 'Вернуться к входу',
+    'reset_password.dev_code_display': 'Тестовый код сброса: {code}',
 
     'signup.title': 'Создать аккаунт',
     'signup.button': 'Создать аккаунт',
@@ -482,8 +506,12 @@ export function LanguageProvider ({ children }) {
     }
   }
 
-  const t = (key) => {
-    return translations[lang]?.[key] || translations['en']?.[key] || key
+  const t = (key, params = {}) => {
+    const template = translations[lang]?.[key] || translations['en']?.[key] || key
+    return Object.entries(params).reduce(
+      (text, [name, value]) => text.replace(new RegExp(`\\{${name}\\}`, 'g'), String(value)),
+      template
+    )
   }
 
   return (

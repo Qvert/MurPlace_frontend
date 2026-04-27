@@ -2,6 +2,7 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import ResetPassword from './pages/ResetPassword'
 import Signup from './pages/Signup'
 import ConfirmEmail from './pages/ConfirmEmail'
 import ProductDetail from './pages/ProductDetail'
@@ -16,16 +17,19 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import { CurrencyProvider } from './context/CurrencyContext'
 
 export default function App() {
   return (
-    <div className="site-shell">
-      <Header />
+    <CurrencyProvider>
+      <div className="site-shell">
+        <Header />
 
       <main className="site-main container mx-auto px-4 py-8">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/confirm" element={<ConfirmEmail />} />
           <Route path="/product/:id" element={<ProductDetail />} />
@@ -41,7 +45,8 @@ export default function App() {
         </Routes>
       </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </CurrencyProvider>
   )
 }

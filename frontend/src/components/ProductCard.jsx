@@ -4,9 +4,11 @@ import { addToCart } from '../utils/cart'
 import { useLang } from '../i18n.jsx'
 import { formatLocalizedPrice } from '../utils/currency'
 import WishlistToggleButton from './WishlistToggleButton'
+import { useCurrency } from '../context/CurrencyContext'
 
 export default function ProductCard({ product, variant = 'catalog' }) {
   const { t, lang } = useLang()
+  const { currency, exchangeRate } = useCurrency()
   const [added, setAdded] = useState(false)
   const addedTimerRef = useRef(null)
 
@@ -22,6 +24,8 @@ export default function ProductCard({ product, variant = 'catalog' }) {
   const isHomeVariant = variant === 'home'
   const cardHeight = isHomeVariant ? 'h-[340px]' : (isSearchVariant ? 'h-[380px]' : 'h-[400px]')
   const imageHeight = isHomeVariant ? 'h-36' : (isSearchVariant ? 'h-44' : 'h-40')
+
+  const getPriceDisplay = () => formatLocalizedPrice(product, lang, currency, exchangeRate)
 
   return (
     <div className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden w-full flex flex-col ${cardHeight} border border-gray-100 group`}>
@@ -39,7 +43,7 @@ export default function ProductCard({ product, variant = 'catalog' }) {
           <p className="text-gray-500 text-xs mb-2 line-clamp-2 h-8">{product.description}</p>
           <div className="mt-auto">
             <p className="text-indigo-600 font-bold text-lg">
-              {formatLocalizedPrice(product, lang)}
+              {getPriceDisplay()}
             </p>
           </div>
         </div>
