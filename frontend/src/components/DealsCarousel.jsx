@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 export default function DealsCarousel({ deals, dealsLoading, t }) {
   const [activeDeal, setActiveDeal] = useState(0)
 
+  const BASE_URL = 'http://127.0.0.1:8000'
+
   useEffect(() => {
     setActiveDeal(0)
   }, [deals])
@@ -45,7 +47,10 @@ export default function DealsCarousel({ deals, dealsLoading, t }) {
         {!dealsLoading && deals.length > 0 && deals.map((deal, index) => {
           const title = deal.title || deal.name || t('hot_deals')
           const description = deal.subtitle || deal.description || ''
-          const imageUrl = deal.image_url || deal.imageUrl || deal.image || ''
+          const rawImage = deal.image_url || deal.imageUrl || deal.image || ''
+          const imageUrl = (rawImage && !rawImage.startsWith('http'))
+            ? `${BASE_URL}${rawImage}`
+            : rawImage
           const ctaLabel = deal.cta_label || deal.ctaLabel || t('deals.shop_now')
           const linkUrl = deal.link || deal.url || deal.href
 
