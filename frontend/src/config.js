@@ -2,7 +2,8 @@
 const config = {
   apiUrl: import.meta.env.PROD 
     ? '/api'  // Relative path when served from Django
-    : '/api'  // Will be proxied in dev via Vite config
+    : '/api',  // Will be proxied in dev via Vite config
+  supportChatWsUrl: import.meta.env.VITE_SUPPORT_CHAT_WS_URL || '/ws/support/'
 };
 
 export default config;

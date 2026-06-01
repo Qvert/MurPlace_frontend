@@ -1,5 +1,6 @@
 import React from 'react'
 import { useLang } from '../i18n.jsx'
+import { requestSupportChatOpen } from '../constants/supportChat'
 
 export default function Contact() {
   const { t } = useLang()
@@ -17,6 +18,13 @@ export default function Contact() {
             <h2 className="font-semibold mb-2">{t('contact.customer_support')}</h2>
             <p className="text-sm text-gray-700">support@murplace.local</p>
             <p className="text-sm text-gray-700">+1 (555) 010-2448</p>
+            <button
+              type="button"
+              onClick={requestSupportChatOpen}
+              className="mt-4 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            >
+              {t('support.chat.button')}
+            </button>
           </div>
           <div className="border rounded-lg p-4 bg-gray-100">
             <h2 className="font-semibold mb-2">{t('contact.business_inquiries')}</h2>

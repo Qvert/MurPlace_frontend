@@ -5,6 +5,8 @@ import { getWishlistCount } from '../utils/wishlist'
 import { useLang } from '../i18n.jsx'
 import useStorageSync from '../hooks/useStorageSync'
 import { STORAGE_EVENTS } from '../constants/storageEvents'
+import { AUTH_CHANGED_EVENT } from '../constants/authEvents'
+import { requestSupportChatOpen } from '../constants/supportChat'
 
 const categoryData = {
   Cats: ['Cat Toys', 'Cat Food', 'Cat Litter', 'Cat Beds', 'Cat Scratchers'],
@@ -61,7 +63,11 @@ export default function Header(){
     const checkAuth = () => setIsAuthenticated(!!localStorage.getItem('token'))
     checkAuth()
     window.addEventListener('storage', checkAuth)
-    return () => window.removeEventListener('storage', checkAuth)
+    window.addEventListener(AUTH_CHANGED_EVENT, checkAuth)
+    return () => {
+      window.removeEventListener('storage', checkAuth)
+      window.removeEventListener(AUTH_CHANGED_EVENT, checkAuth)
+    }
   }, [])
 
   useEffect(() => {
@@ -225,6 +231,18 @@ export default function Header(){
               </Link>
             </>
           )}
+          <button
+            type="button"
+            onClick={requestSupportChatOpen}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:text-indigo-600 hover:bg-gray-100"
+            aria-label={t('support.chat.button')}
+          >
+            <i data-feather="message-circle" className="mr-1"></i>
+            <span className="flex flex-col items-start leading-tight">
+              <span className="text-sm font-medium">{t('support.chat.button')}</span>
+              <span className="text-[11px] text-gray-500">{t('support.chat.quick_action')}</span>
+            </span>
+          </button>
           <Link to="/wishlist" className="relative flex items-center text-gray-700 hover:text-indigo-600">
             <i data-feather="heart" className="mr-1"></i>
             <span>{t('header.wishlist')}</span>

@@ -1,4 +1,5 @@
 import api from './api';
+import { AUTH_CHANGED_EVENT } from '../constants/authEvents'
 
 // Enable front-end mock auth for local testing using Vite env var:
 // VITE_USE_MOCK_AUTH=true
@@ -6,6 +7,27 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK_AUTH === 'true'
 
 const _getMockStore = () => JSON.parse(localStorage.getItem('mock_confirmation_codes') || '{}')
 const _saveMockStore = (s) => localStorage.setItem('mock_confirmation_codes', JSON.stringify(s))
+const notifyAuthChanged = () => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(AUTH_CHANGED_EVENT))
+  }
+}
+const setAuthTokens = (accessToken, refreshToken) => {
+  localStorage.setItem('token', accessToken)
+  if (refreshToken) {
+    localStorage.setItem('refreshToken', refreshToken)
+  } else {
+    localStorage.removeItem('refreshToken')
+  }
+  api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+  notifyAuthChanged()
+}
+const clearAuthTokens = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('refreshToken')
+  delete api.defaults.headers.common['Authorization']
+  notifyAuthChanged()
+}
 const _setMockCode = (email) => {
   const code = Math.floor(100000 + Math.random() * 900000).toString()
   const store = _getMockStore()
@@ -30,9 +52,7 @@ export const authService = {
       // In mock mode accept any password and return JWT-like tokens
       const accessToken = `mock-access-${Date.now()}`
       const refreshToken = `mock-refresh-${Date.now()}`
-      localStorage.setItem('token', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
-      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+      setAuthTokens(accessToken, refreshToken)
       return { access: accessToken, refresh: refreshToken }
     }
 
@@ -45,13 +65,10 @@ export const authService = {
 
       // Handle JWT tokens (access + refresh)
       if (response.data.access) {
-        localStorage.setItem('token', response.data.access)
-        localStorage.setItem('refreshToken', response.data.refresh)
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
+        setAuthTokens(response.data.access, response.data.refresh)
       } else if (response.data.token) {
         // Fallback for old token system
-        localStorage.setItem('token', response.data.token)
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+        setAuthTokens(response.data.token)
       }
 
       return response.data
@@ -64,9 +81,7 @@ export const authService = {
     try {
       await api.post('/api/logout/')
     } finally {
-      localStorage.removeItem('token')
-      localStorage.removeItem('refreshToken')
-      delete api.defaults.headers.common['Authorization']
+      clearAuthTokens()
     }
   },
 
@@ -79,8 +94,7 @@ export const authService = {
     if (USE_MOCK) {
       // In mock mode, generate a new access token
       const accessToken = `mock-access-${Date.now()}`
-      localStorage.setItem('token', accessToken)
-      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+      setAuthTokens(accessToken)
       return accessToken
     }
 
@@ -88,17 +102,14 @@ export const authService = {
       const response = await api.post('/api/token/refresh/', { refresh: refreshToken })
       
       if (response.data.access) {
-        localStorage.setItem('token', response.data.access)
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
+        setAuthTokens(response.data.access, localStorage.getItem('refreshToken'))
         return response.data.access
       }
       
       throw new Error('No access token in refresh response')
     } catch (error) {
       // If refresh fails, clear tokens and force re-login
-      localStorage.removeItem('token')
-      localStorage.removeItem('refreshToken')
-      delete api.defaults.headers.common['Authorization']
+      clearAuthTokens()
       throw error
     }
   },
@@ -136,13 +147,10 @@ export const authService = {
 
       // Handle JWT tokens (access + refresh)
       if (response.data?.access) {
-        localStorage.setItem('token', response.data.access)
-        localStorage.setItem('refreshToken', response.data.refresh)
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
+        setAuthTokens(response.data.access, response.data.refresh)
       } else if (response.data?.token) {
         // Fallback for old token system
-        localStorage.setItem('token', response.data.token)
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+        setAuthTokens(response.data.token)
       }
 
       return response.data
@@ -158,9 +166,7 @@ export const authService = {
       if (verified) {
         const accessToken = `mock-access-${Date.now()}`
         const refreshToken = `mock-refresh-${Date.now()}`
-        localStorage.setItem('token', accessToken)
-        localStorage.setItem('refreshToken', refreshToken)
-        api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+        setAuthTokens(accessToken, refreshToken)
         return { verified: true, access: accessToken, refresh: refreshToken }
       }
       return { verified: false }
@@ -172,12 +178,9 @@ export const authService = {
       // If email is verified, handle JWT tokens
       if (response.data?.verified) {
         if (response.data?.access) {
-          localStorage.setItem('token', response.data.access)
-          localStorage.setItem('refreshToken', response.data.refresh)
-          api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`
+          setAuthTokens(response.data.access, response.data.refresh)
         } else if (response.data?.token) {
-          localStorage.setItem('token', response.data.token)
-          api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+          setAuthTokens(response.data.token)
         }
       }
 

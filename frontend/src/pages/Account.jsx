@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authService } from '../services/auth' // Убедись, что путь верный
 import { useLang } from '../i18n.jsx' // Убедись, что путь верный
+import { requestSupportChatOpen } from '../constants/supportChat'
 
 // Иконка Telegram (SVG)
 const TelegramIcon = () => (
@@ -132,7 +133,7 @@ export default function Account() {
           {/* Быстрые действия */}
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">{t('account.quick_actions') || 'Quick Actions'}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Link
                 to="/cart"
                 className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
@@ -154,6 +155,17 @@ export default function Account() {
                   <div className="text-sm text-gray-600">{t('account.find_products') || 'Find something new'}</div>
                 </div>
               </Link>
+              <button
+                type="button"
+                onClick={requestSupportChatOpen}
+                className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors text-left"
+              >
+                <i data-feather="message-circle" className="mr-3 text-indigo-600"></i>
+                <div>
+                  <div className="font-medium">{t('support.chat.button')}</div>
+                  <div className="text-sm text-gray-600">{t('support.chat.quick_action')}</div>
+                </div>
+              </button>
             </div>
           </section>
 
