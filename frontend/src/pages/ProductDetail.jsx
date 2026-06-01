@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { addToCart } from '../utils/cart'
 import { addReview, getAverageRating, getReviewsByProduct } from '../utils/reviews'
 import { isInWishlist, toggleWishlist } from '../utils/wishlist'
 import { useLang } from '../i18n.jsx' 
-import { formatLocalizedPrice, getLocalizedPriceValue } from '../utils/currency'
+import { formatLocalizedPrice, getConvertedPriceNumber } from '../utils/currency'
 import useStorageSync from '../hooks/useStorageSync'
 import { STORAGE_EVENTS } from '../constants/storageEvents'
+import { useCurrency } from '../context/CurrencyContext'
 
 export default function ProductDetail(){
   const { id } = useParams()
@@ -17,8 +18,20 @@ export default function ProductDetail(){
   const [inWishlist, setInWishlist] = useState(false)
   const [reviews, setReviews] = useState([])
   const [formError, setFormError] = useState(null)
+  const [submittingReview, setSubmittingReview] = useState(false)
   const [reviewForm, setReviewForm] = useState({ author: '', rating: 5, comment: '' })
   const { t, lang } = useLang()
+  const { currency, exchangeRate } = useCurrency()
+
+  const loadReviews = useCallback(async (productId) => {
+    if (productId === undefined || productId === null) return
+    try {
+      const nextReviews = await getReviewsByProduct(productId)
+      setReviews(nextReviews)
+    } catch (err) {
+      // keep existing reviews if loading fails
+    }
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -30,13 +43,13 @@ export default function ProductDetail(){
         const nextProduct = data.product || data
         setProduct(nextProduct)
         setInWishlist(isInWishlist(nextProduct.id))
-        setReviews(getReviewsByProduct(nextProduct.id))
+        loadReviews(nextProduct.id)
       })
       .catch(err => { if (mounted) setError(err.message) })
       .finally(() => { if (mounted) setLoading(false) })
 
     return () => { mounted = false }
-  }, [id])
+  }, [id, loadReviews])
 
   useStorageSync(
     () => {
@@ -52,11 +65,11 @@ export default function ProductDetail(){
   useStorageSync(
     () => {
       if (product?.id === undefined || product?.id === null) return
-      setReviews(getReviewsByProduct(product.id))
+      loadReviews(product.id)
     },
     {
       eventNames: [STORAGE_EVENTS.REVIEWS_UPDATED],
-      deps: [product?.id]
+      deps: [product?.id, loadReviews]
     }
   )
 
@@ -65,7 +78,7 @@ export default function ProductDetail(){
     return '★'.repeat(rating) + '☆'.repeat(5 - rating)
   }
 
-  function handleReviewSubmit(e) {
+  async function handleReviewSubmit(e) {
     e.preventDefault()
     setFormError(null)
 
@@ -74,12 +87,19 @@ export default function ProductDetail(){
       return
     }
 
-    const next = addReview(product.id, reviewForm)
-    setReviews(next)
-    setReviewForm(prev => ({ ...prev, comment: '' }))
+    try {
+      setSubmittingReview(true)
+      const next = await addReview(product.id, reviewForm)
+      setReviews(next)
+      setReviewForm(prev => ({ ...prev, comment: '' }))
+    } catch (err) {
+      setFormError(t('error_prefix') + ' Failed to submit review')
+    } finally {
+      setSubmittingReview(false)
+    }
   }
 
-  const averageRating = getAverageRating(product?.id)
+  const averageRating = getAverageRating(reviews)
 
   if (loading) return <div className="text-center">{t('loading')}</div>
   if (error) return <div className="text-red-500">{t('error_prefix')} {error}</div> 
@@ -99,9 +119,9 @@ export default function ProductDetail(){
               <span className="ml-2 text-gray-600">{reviews.length} {t('reviews.count')}</span>
             </p>
             <p className="text-gray-600 mb-4">{product.description}</p>
-            {getLocalizedPriceValue(product, lang) != null && (
+            {getConvertedPriceNumber(product, currency, exchangeRate, null) != null && (
               <p className="text-indigo-600 font-bold text-3xl mb-4">
-                {formatLocalizedPrice(product, lang)}
+                {formatLocalizedPrice(product, lang, currency, exchangeRate)}
               </p>
             )}
             <div className="mt-auto flex flex-wrap items-center gap-2">
@@ -182,7 +202,11 @@ export default function ProductDetail(){
             />
           </div>
           {formError && <p className="text-red-600 text-sm mt-2">{formError}</p>}
-          <button type="submit" className="mt-3 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded">
+          <button
+            type="submit"
+            className="mt-3 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={submittingReview}
+          >
             {t('reviews.submit')}
           </button>
         </form>

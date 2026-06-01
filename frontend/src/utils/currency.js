@@ -59,9 +59,10 @@ export function getLocalizedPriceNumber(source, lang = 'en', fallback = 0) {
   return number === null ? fallback : number
 }
 
-export function formatPrice(value, lang = 'en') {
+export function formatPrice(value, lang = 'en', currency = 'usd') {
   const isRussian = lang === 'ru'
   const locale = isRussian ? 'ru-RU' : 'en-US'
+  const isRub = currency === 'rub'
 
   const formatAmount = (amount) => {
     const formatted = new Intl.NumberFormat(locale, {
@@ -69,7 +70,7 @@ export function formatPrice(value, lang = 'en') {
       maximumFractionDigits: 2
     }).format(amount)
 
-    return isRussian ? `${formatted} ₽` : `$${formatted}`
+    return isRub ? `${formatted} ₽` : `$${formatted}`
   }
 
   const parsed = parsePriceNumber(value)
@@ -78,9 +79,34 @@ export function formatPrice(value, lang = 'en') {
   const raw = String(value ?? '').trim()
 
   const text = raw.replace(/\$/g, '').replace(/₽/g, '').trim()
-  return isRussian ? `${text} ₽` : `$${text}`
+  return isRub ? `${text} ₽` : `$${text}`
 }
 
-export function formatLocalizedPrice(source, lang = 'en') {
-  return formatPrice(getLocalizedPriceValue(source, lang), lang)
+export function getBaseUsdPriceValue(source) {
+  if (source === undefined || source === null) return null
+  if (typeof source !== 'object') return source
+
+  const usdKeys = ['price_usd', 'usd_price', 'priceUsd']
+  const baseKeys = ['price']
+  const rubKeys = ['price_rub', 'rub_price', 'priceRub']
+
+  return firstDefined(source, [...usdKeys, ...baseKeys, ...rubKeys])
+}
+
+export function getConvertedPriceNumber(source, currency = 'usd', exchangeRate = 95, fallback = 0) {
+  const value = getBaseUsdPriceValue(source)
+  const number = parsePriceNumber(value)
+  if (number === null) return fallback
+  return currency === 'rub' ? number * exchangeRate : number
+}
+
+export function formatLocalizedPrice(source, lang = 'en', currency = 'usd', exchangeRate = 95) {
+  return formatPrice(getConvertedPriceNumber(source, currency, exchangeRate), lang, currency)
+}
+
+export function convertPrice(priceUsd, currency = 'usd', exchangeRate = 95) {
+  if (currency === 'rub' && priceUsd) {
+    return priceUsd * exchangeRate
+  }
+  return priceUsd
 }

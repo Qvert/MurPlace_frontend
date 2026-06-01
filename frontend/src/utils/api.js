@@ -57,3 +57,30 @@ export async function fetchProductsBySearch(query, offset = 0, limit = 20) {
 
   return await res.json();
 }
+
+export async function fetchPopularItems() {
+  // Dedicated endpoint for home popular items.
+  // Keep compatibility with older backends by falling back to /api/products/.
+  let res
+  try {
+    res = await fetch('/api/products/popular/')
+  } catch (err) {
+    // ignore and fallback below
+  }
+
+  if (!res || !res.ok) {
+    res = await fetch('/api/products/')
+  }
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error('Failed fetching popular items: ' + res.status + ' ' + text)
+  }
+
+  const data = await res.json()
+
+  if (Array.isArray(data)) return data
+  if (Array.isArray(data?.products)) return data.products
+  if (Array.isArray(data?.results)) return data.results
+  return []
+}

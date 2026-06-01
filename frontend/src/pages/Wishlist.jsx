@@ -7,10 +7,12 @@ import { formatLocalizedPrice } from '../utils/currency'
 import EmptyStateCard from '../components/EmptyStateCard'
 import useStorageSync from '../hooks/useStorageSync'
 import { STORAGE_EVENTS } from '../constants/storageEvents'
+import { useCurrency } from '../context/CurrencyContext'
 
 export default function Wishlist() {
   const [items, setItems] = useState([])
   const { t, lang } = useLang()
+  const { currency, exchangeRate } = useCurrency()
 
   useStorageSync(() => setItems(getWishlist()), {
     eventNames: [STORAGE_EVENTS.WISHLIST_UPDATED],
@@ -56,7 +58,7 @@ export default function Wishlist() {
             </Link>
             <div className="flex-1 mt-4 sm:mt-0">
               <Link to={`/product/${item.id}`} className="font-semibold hover:text-indigo-600">{item.name}</Link>
-              <p className="text-indigo-600 font-bold mt-1">{formatLocalizedPrice(item, lang)}</p>
+              <p className="text-indigo-600 font-bold mt-1">{formatLocalizedPrice(item, lang, currency, exchangeRate)}</p>
               {item.description && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.description}</p>}
             </div>
             <div className="mt-4 sm:mt-0 flex items-center gap-3">
